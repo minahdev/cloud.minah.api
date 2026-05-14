@@ -1,11 +1,13 @@
-from fastapi import FastAPI, Query
+from fastapi import Depends, FastAPI, Query
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from adapters.db_health_adapter import DatabaseHealthAdapter
+from deps import get_db
 from titanic.app.james_controller import JamesController
-
 from doro.app.doro_diretor import Diretor
 
-
 app = FastAPI(title="Minahdev Cloud Main Page")
+
 
 @app.get("/")
 def read_root():
@@ -61,6 +63,10 @@ def read_doro_data():
     df = diretor.get_data_doro()
     return df.to_dict(orient="records")
 
+
+@app.get("/db-check")
+async def check_db(db: AsyncSession = Depends(get_db)):
+    return await DatabaseHealthAdapter.server_time_payload(db)
 
 
 if __name__ == "__main__":
