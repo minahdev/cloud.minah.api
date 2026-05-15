@@ -1,7 +1,9 @@
-fastapi
-uvicorn[standard]
-sqlalchemy[asyncio]
-psycopg[binary]
-python-dotenv
-pandas
-scikit-learn
+fastapi==0.136.1
+uvicorn[standard]==0.47.0
+sqlalchemy[asyncio]==2.0.49
+psycopg[binary]==3.3.4
+python-dotenv==1.2.2
+pandas==3.0.3
+scikit-learn==1.8.0
+google-generativeai==0.8.6
+httpx==0.28.1
