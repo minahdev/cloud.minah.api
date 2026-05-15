@@ -1,10 +1,6 @@
-import os
-
-from dotenv import load_dotenv
+from matrix.app.keymaker import get_keymaker
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import declarative_base
-
-load_dotenv()
 
 _engine = None
 _session_factory = None
@@ -26,10 +22,10 @@ def get_async_session_factory():
     global _engine, _session_factory
     if _session_factory is not None:
         return _session_factory
-    raw = os.getenv("DATABASE_URL")
-    if not raw or not raw.strip():
+    raw = get_keymaker().database_url
+    if not raw:
         return None
-    url = _normalize_database_url(raw.strip())
+    url = _normalize_database_url(raw)
     _engine = create_async_engine(url, echo=True)
     _session_factory = async_sessionmaker(
         bind=_engine,
