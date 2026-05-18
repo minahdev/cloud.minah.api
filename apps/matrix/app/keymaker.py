@@ -41,6 +41,24 @@ def is_gemini_quota_error(exc: BaseException) -> bool:
     return "429" in str(exc) or "quota" in msg or "resource exhausted" in msg
 
 
+def is_gemini_api_key_error(exc: BaseException) -> bool:
+    msg = str(exc).lower()
+    return (
+        "api_key_invalid" in msg
+        or "api key expired" in msg
+        or "api key not valid" in msg
+        or "invalid api key" in msg
+        or ("permission denied" in msg and "api" in msg)
+    )
+
+
+_GEMINI_KEY_HELP = (
+    "GEMINI_API_KEY가 만료되었거나 잘못되었습니다. "
+    "https://aistudio.google.com/apikey 에서 새 키를 발급한 뒤 "
+    "backend/.env 의 GEMINI_API_KEY 를 갱신하고 uvicorn을 재시작하세요."
+)
+
+
 class Keymaker:
     """앱 전역 API 키·클라이언트 설정을 한 곳에서 관리합니다."""
 
@@ -100,6 +118,8 @@ class Keymaker:
                 return text, model_name
             except Exception as e:
                 last_error = e
+                if is_gemini_api_key_error(e):
+                    raise ValueError(_GEMINI_KEY_HELP) from e
                 if is_gemini_quota_error(e):
                     quota_models.append(model_name)
                     continue

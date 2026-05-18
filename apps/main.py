@@ -1,29 +1,29 @@
+import logging
 from typing import Literal
 
 import httpx
-from fastapi import Depends, FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse, JSONResponse
-from pydantic import BaseModel, Field
+from fastapi import Depends, FastAPI, HTTPException
+from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 from adapters.db_health_adapter import DatabaseHealthAdapter
 from deps import get_db, inject_keymaker
 from matrix.app.keymaker import Keymaker, is_gemini_quota_error
 from titanic.app.james_controller import JamesController
 from doro.app.doro_diretor import Diretor
-from chat_html import render_chat_page
 from chat_mirror import get_last_chat, record_chat
 from weather.app.weather_controller import WeatherController
+from secom.app.schemas.user_schema import UserSchema
+from secom.app.controllers.user_controller import UserController
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(message)s",
+    datefmt="%H:%M:%S",
+    force=True,
+)
+logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Minahdev Cloud Main Page")
-
-
-def _wants_html(request: Request, format_param: str | None) -> bool:
-    if format_param == "json":
-        return False
-    if format_param == "html":
-        return True
-    accept = request.headers.get("accept", "").lower()
-    return "text/html" in accept and not accept.strip().startswith("application/json")
 
 
 class ChatMessage(BaseModel):
@@ -37,6 +37,32 @@ class ChatRequest(BaseModel):
 
 class ChatResponse(BaseModel):
     text: str
+
+
+class LastChatResponse(BaseModel):
+    """프론트 POST /chat 이후 저장된 최근 질문·답변."""
+
+    user_text: str | None = None
+    model_text: str | None = None
+    model_name: str | None = None
+    updated_at: str | None = None
+
+
+class SignupRequest(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    userId: str = Field(..., min_length=1, max_length=64, alias="userId")
+    password: str = Field(..., min_length=1, max_length=128)
+    email: str = Field(..., min_length=3, max_length=254, pattern=r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
+    nickname: str = Field(..., min_length=1, max_length=64)
+
+
+class SignupResponse(BaseModel):
+    message: str
+    userId: str
+    email: str
+    nickname: str
+    role: str = "user"
 
 
 class WeatherResponse(BaseModel):
@@ -105,40 +131,13 @@ def get_weather(
     return WeatherResponse(**payload)
 
 
-@app.get("/chat/last")
-def chat_last():
-    """프론트 POST /chat 이후 저장된 최근 질문·답변 (JSON)."""
+@app.get("/chat", response_model=LastChatResponse)
+def get_chat() -> LastChatResponse:
+    """프론트 Gemini 채팅과 동기화된 최근 질문·답변 (JSON)."""
     snap = get_last_chat()
     if snap is None:
-        return {"user_text": None, "model_text": None, "model_name": None, "updated_at": None}
-    return snap.to_dict()
-
-
-@app.get("/chat")
-def chat_info(request: Request, format: str | None = None):
-    """
-    브라우저: 프론트 Gemini 채팅과 동기화된 최근 Q&A HTML.
-    API: JSON 안내 또는 ?format=json 시 최근 대화 스냅샷.
-    """
-    snap = get_last_chat()
-    if _wants_html(request, format):
-        return HTMLResponse(render_chat_page(snap))
-
-    if snap is not None:
-        return {
-            "message": "최근 Gemini 대화 (프론트 채팅과 동기화)",
-            "last": snap.to_dict(),
-            "view_html": "/chat (브라우저)",
-            "poll": "/chat/last",
-        }
-
-    return {
-        "message": "아직 대화가 없습니다. 프론트(3000) 홈 Gemini 채팅에서 질문하세요.",
-        "method": "POST",
-        "body_example": {"messages": [{"role": "user", "text": "한국의 수도는 어디인가요?"}]},
-        "view_html": "/chat (브라우저)",
-        "poll": "/chat/last",
-    }
+        return LastChatResponse()
+    return LastChatResponse(**snap.to_dict())
 
 
 @app.post("/chat", response_model=ChatResponse)
@@ -164,6 +163,8 @@ def chat(
 
     try:
         text, _model_used = km.send_chat(history=history, user_text=last.text)
+    except ValueError as e:
+        raise HTTPException(status_code=401, detail=str(e)) from e
     except RuntimeError as e:
         raise HTTPException(status_code=429, detail=str(e)) from e
     except Exception as e:
@@ -179,15 +180,8 @@ def chat(
     return ChatResponse(text=text)
 
 @app.get("/")
-def read_root(request: Request, format: str | None = None):
-    if _wants_html(request, format):
-        return HTMLResponse(render_chat_page(get_last_chat()))
-    return {
-        "message": "FastAPI 메인페이지",
-        "docs": "/docs",
-        "chat_mirror": "/chat",
-        "chat_last": "/chat/last",
-    }
+def read_root():
+    return {"message": "FAST API 메인 페이지 ", "docs": "/docs"}
 
 #타이타닉 데이터
 @app.get("/titanic/data")
@@ -244,6 +238,40 @@ def read_doro_data():
 async def check_db(db: AsyncSession = Depends(get_db)):
     return await DatabaseHealthAdapter.server_time_payload(db)
 
+
+
+@app.post("/signup", response_model=SignupResponse)
+async def signup(req: SignupRequest) -> SignupResponse:
+    """회원가입 — uvicorn 터미널에 입력 정보 로그."""
+    logger.info(
+        "[회원가입] 아이디=%s | 비밀번호=%s | 이메일=%s | 닉네임=%s",
+        req.userId,
+        req.password,
+        req.email,
+        req.nickname,
+    )
+
+
+    #프론트엔드에서 가져온 데이터를 스키마에 담아서 DB로 보내는 코드
+    user_schema = UserSchema(
+        userId=req.userId,
+        password=req.password,
+        email=req.email,
+        nickname=req.nickname,
+        role="user",
+    )
+
+    user_controller = UserController()
+    user_controller.save_user(user_schema)
+
+
+    return SignupResponse(
+        message="회원가입 요청이 접수되었습니다.",
+        userId=req.userId,
+        email=req.email,
+        nickname=req.nickname,
+        role="user",
+    )
 
 if __name__ == "__main__":
     import uvicorn

@@ -33,3 +33,20 @@ def get_async_session_factory():
         expire_on_commit=False,
     )
     return _session_factory
+
+
+def get_engine():
+    get_async_session_factory()
+    return _engine
+
+
+async def create_database_tables() -> bool:
+    """Base에 등록된 모든 테이블 생성."""
+    engine = get_engine()
+    if engine is None:
+        return False
+    import secom.app.models.user_model  # noqa: F401 — metadata 등록
+
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    return True
