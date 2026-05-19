@@ -1,24 +1,49 @@
 import logging
 
-from secom.app.models.user_model import UserModel
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from secom.app.models.user_model import User
 from secom.app.schemas.user_schema import UserSchema
 
 logger = logging.getLogger(__name__)
 
 
-def _format_user(user_schema: UserSchema) -> str:
-    return (
-        f"userId={user_schema.userId} | password={user_schema.password} | "
-        f"email={user_schema.email} | nickname={user_schema.nickname} | role={user_schema.role}"
-    )
-
-
 class UserRepository:
-    def save_user(self, user_schema: UserSchema) -> UserSchema:
-        logger.info("[UserRepository] save_user 진입 | %s", _format_user(user_schema))
+    def __init__(self, session: AsyncSession) -> None:
+        self._session = session
 
-        # TODO: UserModel로 DB 저장
-        _user_model = UserModel()
+    async def save_user(self, user_schema: UserSchema, password_hash: str) -> None:
+        logger.info(
+            "[UserRepository] save_user 진입 | userId=%s | email=%s | nickname=%s | role=%s",
+            user_schema.userId,
+            user_schema.email,
+            user_schema.nickname,
+            user_schema.role,
+        )
 
-        logger.info("[UserRepository] save_user 완료 | UserModel 처리 후 반환")
-        return user_schema
+        row = User(
+            user_id=user_schema.userId,
+            password_hash=password_hash,
+            email=user_schema.email,
+            nickname=user_schema.nickname,
+            role=user_schema.role,
+        )
+        self._session.add(row)
+        await self._session.commit()
+
+        logger.info("[UserRepository] save_user 완료 | Neon INSERT userId=%s", user_schema.userId)
+
+    async def find_by_user_id(self, user_id: str) -> User | None:
+        logger.info("[UserRepository] find_by_user_id | userId=%s", user_id)
+
+        stmt = select(User).where(User.user_id == user_id)
+        result = await self._session.execute(stmt)
+        user = result.scalar_one_or_none()
+
+        logger.info(
+            "[UserRepository] find_by_user_id 완료 | userId=%s | found=%s",
+            user_id,
+            user is not None,
+        )
+        return user

@@ -1,9 +1,11 @@
 import logging
+from contextlib import asynccontextmanager
 from typing import Literal
 
 import httpx
 from fastapi import Depends, FastAPI, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from adapters.db_health_adapter import DatabaseHealthAdapter
 from deps import get_db, inject_keymaker
@@ -12,7 +14,9 @@ from titanic.app.james_controller import JamesController
 from doro.app.doro_diretor import Diretor
 from chat_mirror import get_last_chat, record_chat
 from weather.app.weather_controller import WeatherController
-from secom.app.schemas.user_schema import UserSchema
+from database import create_database_tables
+from secom.app.schemas.mypage_schema import MyPageProfileResponse, MyPageProfileSchema
+from secom.app.schemas.user_schema import LoginSchema, UserSchema
 from secom.app.controllers.user_controller import UserController
 
 logging.basicConfig(
@@ -23,7 +27,13 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="Minahdev Cloud Main Page")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await create_database_tables()
+    yield
+
+
+app = FastAPI(title="Minahdev Cloud Main Page", lifespan=lifespan)
 
 
 class ChatMessage(BaseModel):
@@ -63,6 +73,17 @@ class SignupResponse(BaseModel):
     email: str
     nickname: str
     role: str = "user"
+
+class LoginRequest(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    userId: str = Field(..., min_length=1, max_length=64, alias="userId")
+    password: str = Field(..., min_length=1, max_length=128)
+
+
+class LoginResponse(BaseModel):
+    message: str
+    userId: str
 
 
 class WeatherResponse(BaseModel):
@@ -241,7 +262,7 @@ async def check_db(db: AsyncSession = Depends(get_db)):
 
 
 @app.post("/signup", response_model=SignupResponse)
-async def signup(req: SignupRequest) -> SignupResponse:
+async def signup(req: SignupRequest, db: AsyncSession = Depends(get_db)) -> SignupResponse:
     """회원가입 — uvicorn 터미널에 입력 정보 로그."""
     logger.info(
         "[회원가입] 아이디=%s | 비밀번호=%s | 이메일=%s | 닉네임=%s",
@@ -251,8 +272,6 @@ async def signup(req: SignupRequest) -> SignupResponse:
         req.nickname,
     )
 
-
-    #프론트엔드에서 가져온 데이터를 스키마에 담아서 DB로 보내는 코드
     user_schema = UserSchema(
         userId=req.userId,
         password=req.password,
@@ -261,9 +280,15 @@ async def signup(req: SignupRequest) -> SignupResponse:
         role="user",
     )
 
-    user_controller = UserController()
-    user_controller.save_user(user_schema)
-
+    try:
+        user_controller = UserController(db)
+        await user_controller.save_user(user_schema)
+    except IntegrityError as e:
+        await db.rollback()
+        raise HTTPException(
+            status_code=409,
+            detail="이미 사용 중인 아이디 또는 이메일입니다.",
+        ) from e
 
     return SignupResponse(
         message="회원가입 요청이 접수되었습니다.",
@@ -272,6 +297,65 @@ async def signup(req: SignupRequest) -> SignupResponse:
         nickname=req.nickname,
         role="user",
     )
+
+
+@app.post("/login", response_model=LoginResponse)
+async def login(req: LoginRequest, db: AsyncSession = Depends(get_db)) -> LoginResponse:
+    """로그인 — uvicorn 터미널에 입력 정보 로그."""
+    logger.info(
+        "[로그인] 아이디=%s | 비밀번호=%s ",
+        req.userId,
+        req.password,
+    )
+
+    login_schema = LoginSchema(
+        userId=req.userId,
+        password=req.password,
+    )
+
+    try:
+        user_controller = UserController(db)
+        await user_controller.login_user(login_schema)
+    except ValueError as e:
+        raise HTTPException(status_code=401, detail=str(e)) from e
+
+    return LoginResponse(
+        message="로그인 요청이 접수되었습니다.",
+        userId=req.userId,
+    )
+
+
+@app.get("/mypage/profile", response_model=MyPageProfileResponse)
+async def get_mypage_profile(userId: str, db: AsyncSession = Depends(get_db)) -> MyPageProfileResponse:
+    """마이페이지 프로필 조회 — Neon `user_information` 테이블."""
+    user_id = userId.strip()
+    if not user_id:
+        raise HTTPException(status_code=400, detail="userId가 필요합니다.")
+
+    user_controller = UserController(db)
+    profile = await user_controller.get_profile(user_id)
+    if profile is None:
+        raise HTTPException(status_code=404, detail="사용자를 찾을 수 없습니다.")
+    return profile
+
+
+@app.put("/mypage/profile", response_model=MyPageProfileResponse)
+async def save_mypage_profile(
+    req: MyPageProfileSchema, db: AsyncSession = Depends(get_db)
+) -> MyPageProfileResponse:
+    """마이페이지 프로필 저장 — Neon `user_information` INSERT/UPDATE."""
+    try:
+        user_controller = UserController(db)
+        await user_controller.save_profile(req)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e
+
+    profile = await user_controller.get_profile(req.userId)
+    if profile is None:
+        raise HTTPException(status_code=404, detail="사용자를 찾을 수 없습니다.")
+    profile.message = "마이페이지 정보가 저장되었습니다."
+    return profile
+
 
 if __name__ == "__main__":
     import uvicorn

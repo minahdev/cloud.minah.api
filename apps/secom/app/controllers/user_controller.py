@@ -1,24 +1,37 @@
 import logging
 
-from secom.app.schemas.user_schema import UserSchema
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from secom.app.schemas.mypage_schema import MyPageProfileResponse, MyPageProfileSchema
+from secom.app.schemas.user_schema import LoginSchema, UserSchema
 from secom.app.services.user_service import UserService
 
 logger = logging.getLogger(__name__)
 
 
-def _format_user(user_schema: UserSchema) -> str:
-    return (
-        f"userId={user_schema.userId} | password={user_schema.password} | "
-        f"email={user_schema.email} | nickname={user_schema.nickname} | role={user_schema.role}"
-    )
-
-
 class UserController:
-    def save_user(self, user_schema: UserSchema) -> UserSchema:
-        logger.info("[UserController] save_user 진입 | %s", _format_user(user_schema))
+    def __init__(self, session: AsyncSession) -> None:
+        self.user_service = UserService(session)
 
-        user_service = UserService()
-        result = user_service.save_user(user_schema)
+    async def save_user(self, user_schema: UserSchema) -> None:
+        logger.info("[UserController] save_user 진입 | userId=%s", user_schema.userId)
 
-        logger.info("[UserController] save_user 완료 | UserService에서 반환")
-        return result
+        await self.user_service.save_user(user_schema)
+
+        logger.info("[UserController] save_user 완료 | userId=%s", user_schema.userId)
+
+    async def login_user(self, login_schema: LoginSchema) -> None:
+        logger.info("[UserController] login_user 진입 | userId=%s", login_schema.userId)
+
+        await self.user_service.login_user(login_schema)
+
+        logger.info("[UserController] login_user 완료 | userId=%s", login_schema.userId)
+
+    async def get_profile(self, user_id: str) -> MyPageProfileResponse | None:
+        logger.info("[UserController] get_profile 진입 | userId=%s", user_id)
+        return await self.user_service.get_profile(user_id)
+
+    async def save_profile(self, profile: MyPageProfileSchema) -> None:
+        logger.info("[UserController] save_profile 진입 | userId=%s", profile.userId)
+        await self.user_service.save_profile(profile)
+        logger.info("[UserController] save_profile 완료 | userId=%s", profile.userId)
