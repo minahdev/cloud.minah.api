@@ -99,11 +99,11 @@ def _import_orm_models() -> None:
     import secom.app.dtos.schedule_invite_code_model  # noqa: F401
     import secom.app.dtos.user_information_model  # noqa: F401
     import secom.app.dtos.user_model  # noqa: F401
-    import inbody.models.community_model  # noqa: F401
-    import inbody.models.notice_model  # noqa: F401
-    import inbody.models.schedule_model  # noqa: F401
-    import inbody.models.today_story_model  # noqa: F401
-    import inbody.models.train_log_model  # noqa: F401
+    import inbody.adapter.outbound.orm.community_model  # noqa: F401
+    import inbody.adapter.outbound.orm.notice_model  # noqa: F401
+    import inbody.adapter.outbound.orm.schedule_model  # noqa: F401
+    import inbody.adapter.outbound.orm.today_story_model  # noqa: F401
+    import inbody.adapter.outbound.orm.train_log_model  # noqa: F401
     import titanic.adapter.outbound.orm.passenger_orm  # noqa: F401
     import titanic.adapter.outbound.orm.booking_orm  # noqa: F401
 
