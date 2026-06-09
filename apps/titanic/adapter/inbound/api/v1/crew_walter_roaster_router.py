@@ -18,7 +18,7 @@ async def introduce_myself(
 
     return await walter.introduce_myself(
         WalterRoasterSchema(
-            id=2,
+            id=6,
             name="Walter Roaster",
             )
         )

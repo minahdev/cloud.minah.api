@@ -3,22 +3,48 @@ from __future__ import annotations
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from titanic.adapter.outbound.orm.booking_orm import BookingModel
-from titanic.adapter.outbound.orm.passenger_orm import PersonModel
-from titanic.app.dtos.crew_james_director_dto import BookingCommand, PersonCommand
+from titanic.adapter.outbound.orm.passenger_orm import PassengerModel
+from titanic.app.dtos.crew_james_director_dto import BookingCommand, PassengerCommand
 from titanic.app.ports.output.crew_james_director_repository import JamesDirectorRepository
+from titanic.app.dtos.crew_james_director_dto import JamesDirectorResponse, JamesDirectorQuery
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class JamesDirectorPgRepository(JamesDirectorRepository):
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
+    
+    async def introduce_myself(self, query: JamesDirectorQuery) -> JamesDirectorResponse:
+        
+        '''제임스 보트의 자기 소개 레포지토리 구현 메소드'''
+
+        logger.info(f"[JamesDirectorPgRepository] 🍗introduce_myself 진입 | request_data={query}")
+        
+        response: JamesDirectorResponse = JamesDirectorResponse(
+            id= query.id * 10000,
+            name= query.name + "가 레포지토리에 다녀옴"
+        )
+
+        logger.info(f"[JamesDirectorPgRepository] 🍗introduce_myself 종료 | response_data={response}")
+
+        return response
+
+
+
+
+
+
     async def upload_titanic_file(
         self,
-        person_commands: list[PersonCommand],
+        person_commands: list[PassengerCommand],
         booking_commands: list[BookingCommand],
     ) -> int:
         person_orms = [
-            PersonModel(
+            PassengerModel(
                 passenger_id=cmd.passenger_id,
                 name=cmd.name,
                 gender=cmd.gender,
@@ -34,7 +60,7 @@ class JamesDirectorPgRepository(JamesDirectorRepository):
 
         booking_orms = [
             BookingModel(
-                person_id=person_orm.id,
+                passenger_id=person_orm.passenger_id,
                 pclass=cmd.pclass,
                 ticket=cmd.ticket,
                 fare=cmd.fare,

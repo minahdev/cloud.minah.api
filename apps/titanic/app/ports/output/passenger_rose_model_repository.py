@@ -1,12 +1,9 @@
-from __future__ import annotations
-
 from abc import ABC, abstractmethod
-from typing import Any
 
+from titanic.app.dtos.passenger_rose_model_dto import RoseModelResponse, RoseModelQuery
 
-class RoseDiamondRepository(ABC):
-    """Rose — 생존 예측 모델/학습 데이터 접근."""
+class RoseModelRepository(ABC):
 
     @abstractmethod
-    async def get_model_info(self) -> dict[str, Any]:
-        ...
+    def introduce_myself(self, query: RoseModelQuery)-> RoseModelResponse:
+        pass

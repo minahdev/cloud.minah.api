@@ -1,4 +1,4 @@
 from titanic.adapter.outbound.orm.booking_orm import BookingModel
-from titanic.adapter.outbound.orm.person_orm import PersonModel
+from titanic.adapter.outbound.orm.passenger_orm import PassengerModel
 
-__all__ = ["BookingModel", "PersonModel"]
+__all__ = ["BookingModel", "PassengerModel"]

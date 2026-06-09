@@ -4,11 +4,12 @@ import logging
 
 from titanic.app.ports.input.crew_james_director_use_case import JamesDirectorUseCase
 from titanic.app.ports.output.crew_james_director_repository import JamesDirectorRepository
-from titanic.adapter.inbound.api.schemas.crew_james_director_schema import TitanicRecordSchema
+from titanic.adapter.inbound.api.schemas.crew_james_director_schema import TitanicRecordSchema, JamesDirectorSchema
 from titanic.app.dtos.crew_james_director_dto import (
     BookingCommand,
+    JamesDirectorQuery,
     JamesDirectorResponse,
-    PersonCommand,
+    PassengerCommand,
 )
 
 logger = logging.getLogger(__name__)
@@ -18,6 +19,13 @@ class JamesDirectorInteractor(JamesDirectorUseCase):
     def __init__(self, repository: JamesDirectorRepository) -> None:
         self._repository = repository
 
+    async def introduce_myself(self, schema: JamesDirectorSchema) -> JamesDirectorResponse:
+
+        return await self._repository.introduce_myself(JamesDirectorQuery(
+            id= schema.id,
+            name= schema.name
+        ))
+
     async def upload_titanic_file(
         self, schema: list[TitanicRecordSchema]
     ) -> JamesDirectorResponse:
@@ -25,12 +33,12 @@ class JamesDirectorInteractor(JamesDirectorUseCase):
         for record in schema[:5]:
             print(record)
 
-        person_commands: list[PersonCommand] = []
+        person_commands: list[PassengerCommand] = []
         booking_commands: list[BookingCommand] = []
 
         for record in schema:
             person_commands.append(
-                PersonCommand(
+                PassengerCommand(
                     passenger_id=record.passenger_id or "",
                     name=record.name or "",
                     gender=record.gender or "",
@@ -53,4 +61,5 @@ class JamesDirectorInteractor(JamesDirectorUseCase):
         saved = await self._repository.upload_titanic_file(
             person_commands, booking_commands
         )
+        
         return JamesDirectorResponse(saved=saved, received=len(schema))

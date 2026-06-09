@@ -14,8 +14,8 @@ logger = logging.getLogger(__name__)
 crew_lowe_boat_router = APIRouter(prefix="/titanic/lowe", tags=["lowe"])
 
 
-@crew_lowe_boat_router.post("/myself", response_model=LoweBoatResponse)
-async def upload_titanic_file(
+@crew_lowe_boat_router.get("/myself", response_model=LoweBoatResponse)
+async def introduce_myself(
     lowe: LoweBoatUseCase = Depends(get_crew_lowe_boat_use_case))-> LoweBoatResponse:
     
     return await lowe.introduce_myself(

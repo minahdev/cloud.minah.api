@@ -1,12 +1,9 @@
-from __future__ import annotations
-
 from abc import ABC, abstractmethod
-from typing import Any
 
+from titanic.app.dtos.passenger_jack_trainer_dto import JackTrainerResponse, JackTrainerQuery
 
-class JackSketchRepository(ABC):
-    """Jack — 스케치용 승객 1명 조회."""
+class JackTrainerRepository(ABC):
 
     @abstractmethod
-    async def get_passenger(self, passenger_id: str) -> dict[str, Any] | None:
-        ...
+    def introduce_myself(self, query: JackTrainerQuery)-> JackTrainerResponse:
+        pass

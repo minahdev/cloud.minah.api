@@ -1,22 +1,26 @@
-from fastapi import APIRouter, Depends, Query
-from sqlalchemy.ext.asyncio import AsyncSession
+from __future__ import annotations
 
-from core.matrix.database_manager import get_db
-from titanic.adapter.outbound.pg.crew_walter_roaster_pg_repository import WalterPgRepository
-from titanic.app.use_cases.crew_walter_roaster_interactor import WalterQuery
+import logging
 
-'''
-루스 드윗 부카터 (Ruth DeWitt Bukater)
-딸 로즈의 코르셋 끈을 강하게 조이며 상류층의 체면을 강요하던
-통제욕의 상징. 1등석 승객(상류층) 조회를 담당한다.
+from fastapi import APIRouter, Depends
 
-추천 파일명: ruth_survivor_router.py
-'''
+from titanic.app.ports.input.passenger_ruth_validation_use_case import RuthValidationUseCase
+from titanic.dependencies.passenger_ruth_validation_provider import get_passenger_ruth_survivor_use_case
+from titanic.app.dtos.passenger_ruth_validation_dto import RuthValidationResponse
+from titanic.adapter.inbound.api.schemas.passenger_ruth_validation_schema import RuthValidationSchema
 
-ruth_survivor_router = APIRouter(prefix="/titanic/ruth", tags=["ruth"])
+logger = logging.getLogger(__name__)
+
+passenger_ruth_validation_router = APIRouter(prefix="/titanic/ruth", tags=["ruth"])
 
 
-@ruth_survivor_router.get("/myself")
-async def introduce_myself():
-    return {"character": "Ruth DeWitt Bukater", "role": "survivor", "memo": "상류층 체면의 상징. 1등석 승객 필터 조회 담당"}
+@passenger_ruth_validation_router.get("/myself", response_model=RuthValidationResponse)
+async def introduce_myself(
+    ruth: RuthValidationUseCase = Depends(get_passenger_ruth_survivor_use_case))-> RuthValidationResponse:
     
+    return await ruth.introduce_myself(
+        RuthValidationSchema(
+            id=12,
+            name="Ruth DeWitt Bukater",
+            )
+        )

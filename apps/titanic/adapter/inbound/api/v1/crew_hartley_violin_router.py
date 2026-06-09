@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 crew_hartley_violin_router = APIRouter(prefix="/titanic/hartley", tags=["hartley"])
 
 
-@crew_hartley_violin_router.post("/myself", response_model=HartleyViolinResponse)
-async def upload_titanic_file(
+@crew_hartley_violin_router.get("/myself", response_model=HartleyViolinResponse)
+async def introduce_myself(
     hartley: HartleyViolinUseCase = Depends(get_crew_hartley_violin_use_case))-> HartleyViolinResponse:
     
     return await hartley.introduce_myself(

@@ -14,8 +14,8 @@ logger = logging.getLogger(__name__)
 crew_andrews_architect_router = APIRouter(prefix="/titanic/andrews", tags=["andrews"])
 
 
-@crew_andrews_architect_router.post("/myself", response_model=AndrewsArchitectResponse)
-async def upload_titanic_file(
+@crew_andrews_architect_router.get("/myself", response_model=AndrewsArchitectResponse)
+async def introduce_myself(
     andrews: AndrewsArchitectUseCase = Depends(get_crew_andrews_architect_use_case))-> AndrewsArchitectResponse:
     
     return await andrews.introduce_myself(

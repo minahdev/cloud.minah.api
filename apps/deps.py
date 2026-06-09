@@ -1,5 +1,4 @@
-from core.matrix.oracle_database import get_db
-from core.matrix.keymaker_api import Keymaker, get_keymaker
+from core.matrix.secret_manager import Keymaker, get_keymaker
 
 
 def inject_keymaker() -> Keymaker:

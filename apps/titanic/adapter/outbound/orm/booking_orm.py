@@ -5,7 +5,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from core.database import Base
 from titanic.app.dtos.crew_james_director_dto import BookingCommand
-from titanic.adapter.outbound.orm.person_orm import parse_passenger_id
+from titanic.adapter.outbound.orm.passenger_orm import parse_passenger_id
 
 
 class BookingModel(Base):

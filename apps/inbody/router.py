@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.matrix.oracle_database import get_db
+from core.matrix.database_manager import get_db
 from inbody.controllers.community_controller import CommunityController
 from inbody.deps import get_community_controller
 from inbody.controllers.notice_controller import NoticeController

@@ -1,4 +1,4 @@
-from core.matrix.keymaker_api import Keymaker, get_keymaker
+from core.matrix.secret_manager import Keymaker, get_keymaker
 
 from weather.app.weather_service import WeatherService
 

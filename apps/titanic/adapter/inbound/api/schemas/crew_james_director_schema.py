@@ -2,6 +2,21 @@ from __future__ import annotations
 
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
+class JamesDirectorSchema(BaseModel):
+    id: int = Field(0, description="Musician ID")
+    name: str = Field("제임스 카메론", description="Titanic Director")
+    
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "id": 1,
+                "name": "James Carmeron",
+            }
+        }
+    }
+
+
+
 
 class TitanicRecordSchema(BaseModel):
     """Titanic CSV 1행 — Sex 컬럼은 API 필드 `gender`로 매핑."""

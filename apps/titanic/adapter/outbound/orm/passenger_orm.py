@@ -4,7 +4,7 @@ from sqlalchemy import Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from core.database import Base
-from titanic.app.dtos.crew_james_director_dto import PersonCommand
+from titanic.app.dtos.crew_james_director_dto import PassengerCommand
 
 
 def parse_passenger_id(raw: str) -> int | None:
@@ -14,10 +14,10 @@ def parse_passenger_id(raw: str) -> int | None:
     return int(text)
 
 
-class PersonModel(Base):
-    """James `PersonCommand` → `titanic_person` (`passenger_id`는 DB에서 integer)."""
+class PassengerModel(Base):
+    """James `PassengerCommand` → `titanic_passenger` (`passenger_id`는 DB에서 integer)."""
 
-    __tablename__ = "titanic_person"
+    __tablename__ = "titanic_passenger"
 
     passenger_id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(255), default="")
@@ -28,7 +28,7 @@ class PersonModel(Base):
     survived: Mapped[str] = mapped_column(String(8), default="")
 
     @classmethod
-    def from_command(cls, cmd: PersonCommand) -> PersonModel | None:
+    def from_command(cls, cmd: PassengerCommand) -> PassengerModel | None:
         pid = parse_passenger_id(cmd.passenger_id)
         if pid is None:
             return None

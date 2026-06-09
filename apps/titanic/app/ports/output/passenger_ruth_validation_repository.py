@@ -1,11 +1,9 @@
-from __future__ import annotations
-
 from abc import ABC, abstractmethod
 
+from titanic.app.dtos.passenger_ruth_validation_dto import RuthValidationQuery, RuthValidationResponse
 
-class RuthCorsetRepository(ABC):
-    """Ruth — 승객 ID 중복·존재 확인."""
+class RuthValidationRepository(ABC):
 
     @abstractmethod
-    async def exists_passenger_id(self, passenger_id: str) -> bool:
-        ...
+    def introduce_myself(self, query: RuthValidationQuery)-> RuthValidationResponse:
+        pass

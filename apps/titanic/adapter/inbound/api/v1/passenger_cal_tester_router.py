@@ -14,8 +14,8 @@ logger = logging.getLogger(__name__)
 passenger_cal_tester_router = APIRouter(prefix="/titanic/cal", tags=["cal"])
 
 
-@passenger_cal_tester_router.post("/myself", response_model=CalTesterResponse)
-async def upload_titanic_file(
+@passenger_cal_tester_router.get("/myself", response_model=CalTesterResponse)
+async def introduce_myself(
     cal: CalTesterUseCase = Depends(get_passenger_cal_tester_use_case))-> CalTesterResponse:
     
     return await cal.introduce_myself(

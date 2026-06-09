@@ -1,11 +1,9 @@
-from __future__ import annotations
-
 from abc import ABC, abstractmethod
 
+from titanic.app.dtos.passenger_isidor_couple_dto import IsidorCoupleQuery, IsidorCoupleResponse
 
-class IsidorBedRepository(ABC):
-    """Isidor — 객실/등급별 승객 수(구명보트 우선 참고)."""
+class IsidorCoupleRepository(ABC):
 
     @abstractmethod
-    async def count_by_pclass(self) -> dict[str, int]:
-        ...
+    def introduce_myself(self, query: IsidorCoupleQuery)-> IsidorCoupleResponse:
+        pass

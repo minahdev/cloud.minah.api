@@ -1,21 +1,24 @@
 from __future__ import annotations
 
+from titanic.adapter.inbound.api.schemas.passenger_rose_model_schema import (
+    RoseModelSchema
+)
+from titanic.app.dtos.passenger_rose_model_dto import RoseModelResponse, RoseModelQuery
+from titanic.app.ports.input.passenger_rose_model_use_case import RoseModelUseCase
+from titanic.app.ports.output.passenger_rose_model_repository import RoseModelRepository
+
 import logging
-from typing import Any
 
-from titanic.app.ports.input.passenger_rose_model_use_case import RoseDiamondUseCase
-from titanic.app.use_cases.rose_query import RoseModel
+logger = logging.getLogger(__name__)
 
-logger = logging.getLogger()
+class RoseModelInteractor(RoseModelUseCase):
 
+    def __init__(self, repository: RoseModelRepository) -> None:
+        self._repository = repository
 
-class RoseDiamondInteractor(RoseDiamondUseCase):
-    async def get_diamond(self, request: dict[str, Any]) -> dict[str, Any]:
-        msg = "💎 [rose_interactor] get_diamond -> model"
-        logger.info(msg)
-        model = RoseModel()
-        return {
-            "model": model.model_name(),
-            "message": "Rose survival model is ready",
-            "request": request,
-        }
+    async def introduce_myself(self, schema: RoseModelSchema) -> RoseModelResponse:
+        
+        return await self._repository.introduce_myself(RoseModelQuery(
+            id= schema.id,
+            name= schema.name
+        ))

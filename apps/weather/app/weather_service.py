@@ -2,7 +2,7 @@ import os
 
 import httpx
 
-from core.matrix.keymaker_api import Keymaker
+from core.matrix.secret_manager import Keymaker
 from weather.app.weather_cache import cache_key, get_cached, set_cached
 
 _OPENWEATHER_BASE = "https://api.openweathermap.org/data/2.5/weather"

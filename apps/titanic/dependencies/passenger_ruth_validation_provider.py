@@ -7,10 +7,10 @@ DIP 원칙:
   - 세션은 core 의 get_db 에서 주입받는다 (AsyncSession).
 """
 
-from minahai.apps.titanic.adapter.outbound.pg.passenger_ruth_validation_pg_repository import RuthValidationPgRepository
-from minahai.apps.titanic.app.ports.output.passenger_ruth_validation_repository import RuthValidationRepository
-from minahai.apps.titanic.app.ports.input.passenger_ruth_validation_use_case import RuthValidationUseCase
-from minahai.apps.titanic.app.use_cases.passenger_ruth_validation_interactor import RuthValidationInteractor
+from titanic.adapter.outbound.pg.passenger_ruth_validation_pg_repository import RuthValidationPgRepository
+from titanic.app.ports.output.passenger_ruth_validation_repository import RuthValidationRepository
+from titanic.app.ports.input.passenger_ruth_validation_use_case import RuthValidationUseCase
+from titanic.app.use_cases.passenger_ruth_validation_interactor import RuthValidationInteractor
 
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession

@@ -24,8 +24,8 @@ from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from adapters.db_health_adapter import DatabaseHealthAdapter
-from deps import inject_keymaker
-from core.matrix.keymaker_api import Keymaker, is_gemini_quota_error
+from apps.deps import inject_keymaker
+from core.matrix.secret_manager import Keymaker, is_gemini_quota_error
 from doro.app.doro_diretor import Diretor
 from chat_mirror import get_last_chat, record_chat
 from weather.app.weather_controller import WeatherController

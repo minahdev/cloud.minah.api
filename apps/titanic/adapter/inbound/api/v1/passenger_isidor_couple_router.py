@@ -14,13 +14,13 @@ logger = logging.getLogger(__name__)
 passenger_isidor_couple_router = APIRouter(prefix="/titanic/isidor", tags=["isidor"])
 
 
-@passenger_isidor_couple_router.post("/myself", response_model=IsidorCoupleResponse)
-async def upload_titanic_file(
-    cal: IsidorCoupleUseCase = Depends(get_passenger_isidor_couple_use_case))-> IsidorCoupleResponse:
+@passenger_isidor_couple_router.get("/myself", response_model=IsidorCoupleResponse)
+async def introduce_myself(
+    isidor: IsidorCoupleUseCase = Depends(get_passenger_isidor_couple_use_case))-> IsidorCoupleResponse:
     
-    return await cal.introduce_myself(
+    return await isidor.introduce_myself(
         IsidorCoupleSchema(
             id=8,
-            name="Caledon Hockley",
+            name="Isidor Straus",
             )
         )

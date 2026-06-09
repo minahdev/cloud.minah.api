@@ -10,7 +10,7 @@ class JamesDirectorQuery:
 
 
 @dataclass
-class PersonCommand:
+class PassengerCommand:
     """Person 테이블 — 3NF ERD 그대로 (타입은 str 통일)."""
 
     passenger_id: str

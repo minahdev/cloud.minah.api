@@ -1,7 +1,7 @@
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from deps import get_db
+from core.matrix.database_manager import get_db
 from inbody.community_media import CommunityMediaStorage, get_community_media_storage
 from inbody.controllers.community_controller import CommunityController
 

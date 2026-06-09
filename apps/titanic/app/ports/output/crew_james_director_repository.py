@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any
 
-from titanic.app.dtos.crew_james_director_dto import BookingCommand, PersonCommand
+from titanic.app.dtos.crew_james_director_dto import BookingCommand, PassengerCommand
 from titanic.app.dtos.crew_james_director_dto import JamesDirectorResponse, JamesDirectorQuery
 
 
@@ -13,7 +13,7 @@ class JamesDirectorRepository(ABC):
     @abstractmethod
     async def upload_titanic_file(
         self,
-        person_commands: list[PersonCommand],
+        person_commands: list[PassengerCommand],
         booking_commands: list[BookingCommand],
     ) -> int:
         pass

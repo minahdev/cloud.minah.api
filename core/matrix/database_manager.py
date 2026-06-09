@@ -104,7 +104,7 @@ def _import_orm_models() -> None:
     import inbody.models.schedule_model  # noqa: F401
     import inbody.models.today_story_model  # noqa: F401
     import inbody.models.train_log_model  # noqa: F401
-    import titanic.adapter.outbound.orm.person_orm  # noqa: F401
+    import titanic.adapter.outbound.orm.passenger_orm  # noqa: F401
     import titanic.adapter.outbound.orm.booking_orm  # noqa: F401
 
 

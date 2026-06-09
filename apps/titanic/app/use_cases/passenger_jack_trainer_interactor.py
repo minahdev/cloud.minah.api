@@ -1,21 +1,24 @@
 from __future__ import annotations
 
+from titanic.adapter.inbound.api.schemas.passenger_jack_trainer_schema import (
+    JackTrainerSchema
+)
+from titanic.app.dtos.passenger_jack_trainer_dto import JackTrainerResponse, JackTrainerQuery
+from titanic.app.ports.input.passenger_jack_trainer_use_case import JackTrainerUseCase
+from titanic.app.ports.output.passenger_jack_trainer_repository import JackTrainerRepository
+
 import logging
-from typing import Any
 
-from titanic.app.ports.input.passenger_jack_trainer_use_case import JackSketchUseCase
+logger = logging.getLogger(__name__)
 
-logger = logging.getLogger()
+class JackTrainerInteractor(JackTrainerUseCase):
 
+    def __init__(self, repository: JackTrainerRepository) -> None:
+        self._repository = repository
 
-class JackSketchInteractor(JackSketchUseCase):
-    async def get_sketch(self, request: dict[str, Any]) -> dict[str, Any]:
-        msg = "🎨 [jack_interactor] get_sketch"
-        logger.info(msg)
-        subject = str(request.get("name") or request.get("passengerId") or "passenger")
-        return {
-            "artist": "Jack Dawson",
-            "subject": subject,
-            "medium": "charcoal",
-            "message": "Sketch ready",
-        }
+    async def introduce_myself(self, schema: JackTrainerSchema) -> JackTrainerResponse:
+        
+        return await self._repository.introduce_myself(JackTrainerQuery(
+            id= schema.id,
+            name= schema.name
+        ))
