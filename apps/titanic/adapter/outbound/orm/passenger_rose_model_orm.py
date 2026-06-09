@@ -1,6 +1,6 @@
 from sqlalchemy import Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
-from minahai.core.matrix.theone_base import Base
+from core.matrix.theone_base import Base
 
 class RoseModelOrm(Base):
 

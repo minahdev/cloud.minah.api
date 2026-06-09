@@ -1,15 +1,16 @@
 from sqlalchemy import Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
-from minahai.core.matrix.theone_base import Base
+from core.matrix.database_manager import Base
 
-class JackTrainerOrm(Base):
-
+class PassengerOrm(Base):
     __tablename__ = "passengers"
 
-    passenger_id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    name: Mapped[str] = mapped_column(String(255), default="")
-    gender: Mapped[str] = mapped_column(String(16), default="")
-    age: Mapped[str] = mapped_column(String(16), default="")
-    sib_sp: Mapped[str] = mapped_column(String(16), default="")
-    parch: Mapped[str] = mapped_column(String(16), default="")
-    survived: Mapped[str] = mapped_column(String(8), default="")
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    passenger_id: Mapped[str | None] = mapped_column(String, nullable=True)
+    name: Mapped[str | None] = mapped_column(String, nullable=True)
+    gender: Mapped[str | None] = mapped_column(String, nullable=True)
+    age: Mapped[str | None] = mapped_column(String, nullable=True)
+    sib_sp: Mapped[str | None] = mapped_column(String, nullable=True)
+    parch: Mapped[str | None] = mapped_column(String, nullable=True)
+    survived: Mapped[str | None] = mapped_column(String, nullable=True)
+
