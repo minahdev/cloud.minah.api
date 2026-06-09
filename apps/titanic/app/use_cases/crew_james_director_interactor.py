@@ -9,6 +9,7 @@ from titanic.app.dtos.crew_james_director_dto import (
     BookingCommand,
     JamesDirectorQuery,
     JamesDirectorResponse,
+    JamesIntroduceResponse,
     PassengerCommand,
 )
 
@@ -19,7 +20,7 @@ class JamesDirectorInteractor(JamesDirectorUseCase):
     def __init__(self, repository: JamesDirectorRepository) -> None:
         self._repository = repository
 
-    async def introduce_myself(self, schema: JamesDirectorSchema) -> JamesDirectorResponse:
+    async def introduce_myself(self, schema: JamesDirectorSchema) -> JamesIntroduceResponse:
 
         return await self._repository.introduce_myself(JamesDirectorQuery(
             id= schema.id,

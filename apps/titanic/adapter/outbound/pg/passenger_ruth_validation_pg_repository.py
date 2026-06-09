@@ -25,6 +25,5 @@ class RuthValidationPgRepository(RuthValidationRepository):
             name= query.name + "가 레포지토리에 다녀옴"
         )
 
-        logger.info(f"[RuthValidationPgRepository] 🧇introduce_myself 종료 | response_data={response}")
 
         return response

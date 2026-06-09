@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from titanic.app.dtos.crew_james_director_dto import BookingCommand, PassengerCommand
-from titanic.app.dtos.crew_james_director_dto import JamesDirectorResponse, JamesDirectorQuery
+from titanic.app.dtos.crew_james_director_dto import JamesDirectorResponse, JamesDirectorQuery, JamesIntroduceResponse
 
 
 class JamesDirectorRepository(ABC):
@@ -20,5 +20,5 @@ class JamesDirectorRepository(ABC):
 
 
     @abstractmethod
-    async def introduce_myself(self, query: JamesDirectorQuery) -> JamesDirectorResponse:
+    async def introduce_myself(self, query: JamesDirectorQuery) -> JamesIntroduceResponse:
         pass

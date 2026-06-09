@@ -25,6 +25,4 @@ class LoweBoatPgRepository(LoweBoatRepository):
             name= query.name + "가 레포지토리에 다녀옴"
         )
 
-        logger.info(f"[LoweBoatPgRepository] 🍔introduce_myself 종료 | response_data={response}")
-
         return response

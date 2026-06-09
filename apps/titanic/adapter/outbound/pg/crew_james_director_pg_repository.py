@@ -6,7 +6,7 @@ from titanic.adapter.outbound.orm.booking_orm import BookingModel
 from titanic.adapter.outbound.orm.passenger_orm import PassengerModel
 from titanic.app.dtos.crew_james_director_dto import BookingCommand, PassengerCommand
 from titanic.app.ports.output.crew_james_director_repository import JamesDirectorRepository
-from titanic.app.dtos.crew_james_director_dto import JamesDirectorResponse, JamesDirectorQuery
+from titanic.app.dtos.crew_james_director_dto import JamesDirectorResponse, JamesDirectorQuery, JamesIntroduceResponse
 
 import logging
 
@@ -18,18 +18,16 @@ class JamesDirectorPgRepository(JamesDirectorRepository):
         self.session = session
 
     
-    async def introduce_myself(self, query: JamesDirectorQuery) -> JamesDirectorResponse:
-        
+    async def introduce_myself(self, query: JamesDirectorQuery) -> JamesIntroduceResponse:
+
         '''제임스 보트의 자기 소개 레포지토리 구현 메소드'''
 
         logger.info(f"[JamesDirectorPgRepository] 🍗introduce_myself 진입 | request_data={query}")
-        
-        response: JamesDirectorResponse = JamesDirectorResponse(
-            id= query.id * 10000,
-            name= query.name + "가 레포지토리에 다녀옴"
-        )
 
-        logger.info(f"[JamesDirectorPgRepository] 🍗introduce_myself 종료 | response_data={response}")
+        response = JamesIntroduceResponse(
+            id=query.id * 10000,
+            name=query.name + "가 레포지토리에 다녀옴"
+        )
 
         return response
 

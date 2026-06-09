@@ -24,7 +24,4 @@ class IsidorCouplePgRepository(IsidorCoupleRepository):
             id= query.id * 10000,
             name= query.name + "가 레포지토리에 다녀옴"
         )
-
-        logger.info(f"[IsidorCouplePgRepository] 🍿introduce_myself 종료 | response_data={response}")
-
         return response

@@ -38,3 +38,9 @@ class JamesDirectorResponse:
     saved: int
     received: int
     message: str = "업로드가 완료되었습니다."
+
+
+@dataclass
+class JamesIntroduceResponse:
+    id: int
+    name: str
