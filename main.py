@@ -322,11 +322,7 @@ async def signup(req: SignupRequest, db: AsyncSession = Depends(get_db)) -> Sign
 @app.post("/login", response_model=LoginResponse)
 async def login(req: LoginRequest, db: AsyncSession = Depends(get_db)) -> LoginResponse:
     """로그인 — uvicorn 터미널에 입력 정보 로그."""
-    logger.info(
-        "[로그인] 아이디=%s | 비밀번호=%s ",
-        req.userId,
-        req.password,
-    )
+    logger.info("[로그인] 아이디=%s", req.userId)
 
     login_schema = LoginSchema(
         userId=req.userId,

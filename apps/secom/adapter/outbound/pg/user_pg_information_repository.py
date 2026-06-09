@@ -74,7 +74,6 @@ class UserInformationRepository:
         )
 
     async def get_profile(self, login_user_id: str) -> MyPageProfileResponse | None:
-        logger.info("[UserInformationRepository] get_profile | userId=%s", login_user_id)
         row = await self.find_by_login_user_id(login_user_id)
         if row is None:
             return None

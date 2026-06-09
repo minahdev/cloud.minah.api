@@ -35,18 +35,9 @@ class UserRepository:
         logger.info("[UserRepository] save_user 완료 | Neon INSERT userId=%s", user_schema.userId)
 
     async def find_by_user_id(self, user_id: str) -> User | None:
-        logger.info("[UserRepository] find_by_user_id | userId=%s", user_id)
-
         stmt = select(User).where(User.user_id == user_id)
         result = await self._session.execute(stmt)
-        user = result.scalar_one_or_none()
-
-        logger.info(
-            "[UserRepository] find_by_user_id 완료 | userId=%s | found=%s",
-            user_id,
-            user is not None,
-        )
-        return user
+        return result.scalar_one_or_none()
 
     async def list_by_role(self, role: str) -> list[User]:
         stmt = select(User).where(User.role == role).order_by(User.nickname)

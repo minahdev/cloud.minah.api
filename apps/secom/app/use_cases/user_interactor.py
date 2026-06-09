@@ -34,13 +34,10 @@ class UserService:
         logger.info("[UserService] save_user 완료 | userId=%s", user_schema.userId)
 
     async def is_user_id_available(self, user_id: str) -> bool:
-        logger.info("[UserService] is_user_id_available | userId=%s", user_id)
         user = await self.user_repository.find_by_user_id(user_id)
         return user is None
 
     async def login_user(self, login_schema: LoginSchema) -> None:
-        logger.info("[UserService] login_user 진입 | userId=%s", login_schema.userId)
-
         user = await self.user_repository.find_by_user_id(login_schema.userId)
         if user is None:
             raise ValueError("아이디 또는 비밀번호가 올바르지 않습니다.")
@@ -58,7 +55,6 @@ class UserService:
         return user.role if user is not None else "user"
 
     async def get_profile(self, user_id: str) -> MyPageProfileResponse | None:
-        logger.info("[UserService] get_profile 진입 | userId=%s", user_id)
         user = await self.user_repository.find_by_user_id(user_id)
         if user is None:
             return None
