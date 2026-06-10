@@ -10,7 +10,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-crew_walter_roaster_router = APIRouter(prefix="/titanic/walter", tags=["walter"])
+crew_walter_roaster_router = APIRouter(prefix="/walter", tags=["walter"])
 
 @crew_walter_roaster_router.get("/myself", response_model=WalterRoasterResponse)
 async def introduce_myself(

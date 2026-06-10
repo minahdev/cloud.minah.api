@@ -11,7 +11,7 @@ from titanic.adapter.inbound.api.schemas.passenger_rose_model_schema import Rose
 
 logger = logging.getLogger(__name__)
 
-passenger_rose_model_router = APIRouter(prefix="/titanic/rose", tags=["rose"])
+passenger_rose_model_router = APIRouter(prefix="/rose", tags=["rose"])
 
 
 @passenger_rose_model_router.get("/myself", response_model=RoseModelResponse)

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from titanic.adapter.outbound.orm.passenger_orm import PassengerOrm
+from titanic.adapter.outbound.orm.passenger_jack_trainer_orm import JackTrainerOrm as PassengerOrm
 from titanic.domain.entities.passenger_jack_trainer_entity import Passenger
 from titanic.domain.value_objects import (
     Age,

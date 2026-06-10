@@ -9,7 +9,7 @@ from titanic.adapter.inbound.api.schemas.crew_hartley_violin_schema import Hartl
 
 logger = logging.getLogger(__name__)
 
-crew_hartley_violin_router = APIRouter(prefix="/titanic/hartley", tags=["hartley"])
+crew_hartley_violin_router = APIRouter(prefix="/hartley", tags=["hartley"])
 
 
 @crew_hartley_violin_router.get("/myself", response_model=HartleyViolinResponse)

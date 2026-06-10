@@ -11,7 +11,18 @@ from titanic.adapter.inbound.api.schemas.crew_smith_captain_schema import SmithC
 
 logger = logging.getLogger(__name__)
 
-crew_smith_captain_router = APIRouter(prefix="/titanic/smith", tags=["smith"])
+crew_smith_captain_router = APIRouter(prefix="/smith", tags=["smith"])
+
+
+
+@crew_smith_captain_router.post("/", response_model=SmithCaptainResponse)
+async def chat(
+    smith: SmithCaptainUseCase = Depends(get_crew_smith_captain_use_case)
+    )-> SmithCaptainResponse:
+    return None
+    
+    
+
 
 
 @crew_smith_captain_router.get("/myself", response_model=SmithCaptainResponse)
@@ -22,5 +33,9 @@ async def introduce_myself(
         SmithCaptainSchema(
             id=5,
             name="Edward John Smith",
-            )
         )
+    )
+
+
+
+    

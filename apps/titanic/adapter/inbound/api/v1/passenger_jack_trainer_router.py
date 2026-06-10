@@ -11,7 +11,7 @@ from titanic.adapter.inbound.api.schemas.passenger_jack_trainer_schema import Ja
 
 logger = logging.getLogger(__name__)
 
-passenger_jack_trainer_router = APIRouter(prefix="/titanic/jack", tags=["jack"])
+passenger_jack_trainer_router = APIRouter(prefix="/jack", tags=["jack"])
 
 
 @passenger_jack_trainer_router.get("/myself", response_model=JackTrainerResponse)

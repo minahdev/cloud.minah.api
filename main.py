@@ -64,8 +64,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Minahdev Cloud Main Page", lifespan=lifespan)
-app.include_router(inbody_router)
-app.include_router(titanic_router)
+
 
 _UPLOADS_ROOT = Path(__file__).resolve().parent / "uploads"
 _UPLOADS_ROOT.mkdir(parents=True, exist_ok=True)
@@ -243,6 +242,10 @@ def chat(
 
     record_chat(user_text=last.text, model_text=text, model_name=_model_used)
     return ChatResponse(text=text)
+
+
+app.include_router(inbody_router)
+app.include_router(titanic_router, prefix="/api")
 
 @app.get("/")
 def read_root():

@@ -12,14 +12,14 @@ from titanic.adapter.inbound.api.schemas.crew_james_director_schema import James
 
 logger = logging.getLogger(__name__)
 
-crew_james_director_router = APIRouter(prefix="/titanic/james", tags=["james"])
+crew_james_director_router = APIRouter(prefix="/james", tags=["james"])
 
 
 @crew_james_director_router.post("/upload", response_model=JamesDirectorResponse)
 async def upload_titanic_file(
     file: UploadFile = File(...),
     james: JamesDirectorUseCase = Depends(get_crew_james_director_use_case))-> JamesDirectorResponse:
-    
+
     return await james.upload_titanic_file(
         _parse_csv((await file.read()).decode("utf-8-sig", errors="replace"))
     )

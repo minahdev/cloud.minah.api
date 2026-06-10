@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.dialects.postgresql import insert
 
-from titanic.adapter.outbound.orm.booking_orm import BookingModel
-from titanic.adapter.outbound.orm.passenger_orm import PassengerModel
+from titanic.adapter.outbound.orm.passenger_rose_model_orm import RoseModelOrm as BookingModel
+from titanic.adapter.outbound.orm.passenger_jack_trainer_orm import PassengerModel
 from titanic.app.dtos.crew_james_director_dto import BookingCommand, PassengerCommand
 from titanic.app.ports.output.crew_james_director_repository import JamesDirectorRepository
 from titanic.app.dtos.crew_james_director_dto import JamesDirectorResponse, JamesDirectorQuery, JamesIntroduceResponse
@@ -41,33 +42,37 @@ class JamesDirectorPgRepository(JamesDirectorRepository):
         person_commands: list[PassengerCommand],
         booking_commands: list[BookingCommand],
     ) -> int:
-        person_orms = [
-            PassengerModel(
-                passenger_id=cmd.passenger_id,
-                name=cmd.name,
-                gender=cmd.gender,
-                age=cmd.age,
-                sib_sp=cmd.sib_sp,
-                parch=cmd.parch,
-                survived=cmd.survived,
-            )
+        person_values = [
+            {
+                "passenger_id": cmd.passenger_id,
+                "name": cmd.name,
+                "gender": cmd.gender,
+                "age": cmd.age,
+                "sib_sp": cmd.sib_sp,
+                "parch": cmd.parch,
+                "survived": cmd.survived,
+            }
             for cmd in person_commands
         ]
-        self.session.add_all(person_orms)
+        await self.session.execute(
+            insert(PassengerModel).values(person_values).on_conflict_do_nothing(index_elements=["passenger_id"])
+        )
         await self.session.flush()
 
-        booking_orms = [
-            BookingModel(
-                passenger_id=person_orm.passenger_id,
-                pclass=cmd.pclass,
-                ticket=cmd.ticket,
-                fare=cmd.fare,
-                cabin=cmd.cabin,
-                embarked=cmd.embarked,
-            )
-            for person_orm, cmd in zip(person_orms, booking_commands)
+        booking_values = [
+            {
+                "passenger_id": cmd_p.passenger_id,
+                "pclass": cmd_b.pclass or "",
+                "ticket": cmd_b.ticket or "",
+                "fare": cmd_b.fare or "",
+                "cabin": cmd_b.cabin or "",
+                "embarked": cmd_b.embarked or "",
+            }
+            for cmd_p, cmd_b in zip(person_commands, booking_commands)
         ]
-        self.session.add_all(booking_orms)
+        await self.session.execute(
+            insert(BookingModel).values(booking_values)
+        )
         await self.session.commit()
 
-        return len(person_orms)
+        return len(person_values)

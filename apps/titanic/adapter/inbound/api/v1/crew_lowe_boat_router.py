@@ -11,7 +11,7 @@ from titanic.adapter.inbound.api.schemas.crew_lowe_boat_schema import LoweBoatSc
 
 logger = logging.getLogger(__name__)
 
-crew_lowe_boat_router = APIRouter(prefix="/titanic/lowe", tags=["lowe"])
+crew_lowe_boat_router = APIRouter(prefix="/lowe", tags=["lowe"])
 
 
 @crew_lowe_boat_router.get("/myself", response_model=LoweBoatResponse)

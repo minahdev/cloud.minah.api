@@ -11,7 +11,7 @@ from titanic.adapter.inbound.api.schemas.crew_andrews_architect_schema import An
 
 logger = logging.getLogger(__name__)
 
-crew_andrews_architect_router = APIRouter(prefix="/titanic/andrews", tags=["andrews"])
+crew_andrews_architect_router = APIRouter(prefix="/andrews", tags=["andrews"])
 
 
 @crew_andrews_architect_router.get("/myself", response_model=AndrewsArchitectResponse)

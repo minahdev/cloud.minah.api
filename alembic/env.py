@@ -52,8 +52,8 @@ if config.config_file_name is not None:
 from core.database import Base  # noqa: E402
 from secom.app.dtos.user_information_model import UserInformation  # noqa: F401, E402
 from secom.app.dtos.user_model import User  # noqa: F401, E402
-from titanic.adapter.outbound.orm.booking_orm import BookingModel  # noqa: F401, E402
-from titanic.adapter.outbound.orm.passenger_orm import PassengerModel  # noqa: F401, E402
+from titanic.adapter.outbound.orm.passenger_rose_model_orm import RoseModelOrm  # noqa: F401, E402
+from titanic.adapter.outbound.orm.passenger_jack_trainer_orm import PassengerModel  # noqa: F401, E402
 
 target_metadata = Base.metadata
 

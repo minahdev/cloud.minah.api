@@ -11,7 +11,7 @@ from titanic.adapter.inbound.api.schemas.passenger_ruth_validation_schema import
 
 logger = logging.getLogger(__name__)
 
-passenger_ruth_validation_router = APIRouter(prefix="/titanic/ruth", tags=["ruth"])
+passenger_ruth_validation_router = APIRouter(prefix="/ruth", tags=["ruth"])
 
 
 @passenger_ruth_validation_router.get("/myself", response_model=RuthValidationResponse)

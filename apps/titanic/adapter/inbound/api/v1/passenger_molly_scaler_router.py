@@ -11,7 +11,7 @@ from titanic.adapter.inbound.api.schemas.passenger_molly_scaler_schema import Mo
 
 logger = logging.getLogger(__name__)
 
-passenger_molly_scaler_router = APIRouter(prefix="/titanic/molly", tags=["molly"])
+passenger_molly_scaler_router = APIRouter(prefix="/molly", tags=["molly"])
 
 
 @passenger_molly_scaler_router.get("/myself", response_model=MollyScalerResponse)

@@ -104,8 +104,8 @@ def _import_orm_models() -> None:
     import inbody.adapter.outbound.orm.schedule_model  # noqa: F401
     import inbody.adapter.outbound.orm.today_story_model  # noqa: F401
     import inbody.adapter.outbound.orm.train_log_model  # noqa: F401
-    import titanic.adapter.outbound.orm.passenger_orm  # noqa: F401
-    import titanic.adapter.outbound.orm.booking_orm  # noqa: F401
+    import titanic.adapter.outbound.orm.passenger_jack_trainer_orm  # noqa: F401
+    import titanic.adapter.outbound.orm.passenger_rose_model_orm  # noqa: F401
 
 
 async def create_database_tables() -> None:
@@ -113,8 +113,10 @@ async def create_database_tables() -> None:
     if factory is None or engine is None:
         return
     _import_orm_models()
+    from core.matrix.theone_base import Base as TheoneBase
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        await conn.run_sync(TheoneBase.metadata.create_all)
 
 
 def create_database_tables_windows_threadsafe() -> None:

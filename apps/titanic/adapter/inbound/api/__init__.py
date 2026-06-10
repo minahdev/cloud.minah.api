@@ -15,8 +15,7 @@ from titanic.adapter.inbound.api.v1.passenger_ruth_validation_router import pass
 from titanic.adapter.inbound.api.v1.crew_smith_captain_router import crew_smith_captain_router
 from titanic.adapter.inbound.api.v1.crew_walter_roaster_router import crew_walter_roaster_router
 
-titanic_router = APIRouter()
-
+titanic_router = APIRouter(prefix="/titanic", tags=["titanic"])
 titanic_router.include_router(crew_james_director_router)
 titanic_router.include_router(passenger_rose_model_router)
 titanic_router.include_router(crew_walter_roaster_router)

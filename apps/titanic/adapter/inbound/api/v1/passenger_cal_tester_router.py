@@ -11,7 +11,7 @@ from titanic.adapter.inbound.api.schemas.passenger_cal_tester_schema import CalT
 
 logger = logging.getLogger(__name__)
 
-passenger_cal_tester_router = APIRouter(prefix="/titanic/cal", tags=["cal"])
+passenger_cal_tester_router = APIRouter(prefix="/cal", tags=["cal"])
 
 
 @passenger_cal_tester_router.get("/myself", response_model=CalTesterResponse)
