@@ -18,7 +18,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.database import get_db
 
 
-def get_passenger_jack_trainer_use_case(
+def get_jack_trainer(
     db: AsyncSession = Depends(get_db),
 ) -> JackTrainerUseCase:
     repository: JackTrainerRepository = JackTrainerPgRepository(session=db)

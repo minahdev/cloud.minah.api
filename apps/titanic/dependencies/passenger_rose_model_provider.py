@@ -18,7 +18,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.database import get_db
 
 
-def get_passenger_rose_model_use_case(
+def get_rose_model(
     db: AsyncSession = Depends(get_db),
 ) -> RoseModelUseCase:
     repository: RoseModelRepository = RoseModelPgRepository(session=db)

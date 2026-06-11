@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from titanic.app.dtos.crew_smith_captain_dto import SmithCaptainResponse, SmithCaptainQuery
+from titanic.app.dtos.crew_smith_captain_dto import SmithCaptainResponse, SmithCaptainQuery, SmithCaptainChatCommand
 from titanic.app.ports.output.crew_smith_captain_repository import SmithCaptainRepository
 
 import logging
@@ -26,3 +26,11 @@ class SmithCaptainPgRepository(SmithCaptainRepository):
         )
 
         return response
+
+    async def chat(self, command: SmithCaptainChatCommand) -> SmithCaptainResponse:
+        logger.info(f"[SmithCaptainPgRepository] 💬chat 진입 | message={command.message}")
+
+        return SmithCaptainResponse(
+            id=0,
+            name=f"[Smith] '{command.message}' 수신됨"
+        )

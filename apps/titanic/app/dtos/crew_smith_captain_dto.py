@@ -1,6 +1,10 @@
 from dataclasses import dataclass
 from datetime import datetime
 
+@dataclass(frozen=True)
+class SmithCaptainChatCommand:
+    message: str
+
 @dataclass(frozen=True) # 생성 후 수정 불가하도록 설정
 class SmithCaptainQuery:
     
