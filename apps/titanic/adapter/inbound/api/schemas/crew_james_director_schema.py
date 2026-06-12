@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import Optional
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
 class JamesDirectorSchema(BaseModel):
@@ -24,7 +25,7 @@ class TitanicRecordSchema(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     passenger_id: str = Field(validation_alias=AliasChoices("PassengerId", "passengerId"))
-    survived: str = Field(
+    survived: Optional[str] = Field(
         default="",
         validation_alias=AliasChoices("Survived", "survived"),
     )
@@ -39,7 +40,7 @@ class TitanicRecordSchema(BaseModel):
     parch: str = Field(default="", validation_alias=AliasChoices("Parch", "parch"))
     ticket: str = Field(default="", validation_alias=AliasChoices("Ticket", "ticket"))
     fare: str = Field(default="", validation_alias=AliasChoices("Fare", "fare"))
-    cabin: str = Field(default="", validation_alias=AliasChoices("Cabin", "cabin"))
+    cabin: Optional[str] = Field(default="", validation_alias=AliasChoices("Cabin", "cabin"))
     embarked: str = Field(
         default="",
         validation_alias=AliasChoices("Embarked", "embarked"),
@@ -52,3 +53,6 @@ class JamesUploadResponse(BaseModel):
     saved: int
     received: int
     message: str = "업로드가 완료되었습니다."
+
+
+FileUploadSchema = TitanicRecordSchema

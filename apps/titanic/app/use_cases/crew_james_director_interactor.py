@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import logging
+from typing import TYPE_CHECKING
 
 from titanic.app.ports.input.crew_james_director_use_case import JamesDirectorUseCase
 from titanic.app.ports.output.crew_james_director_repository import JamesDirectorRepository
-from titanic.adapter.inbound.api.schemas.crew_james_director_schema import TitanicRecordSchema, JamesDirectorSchema
 from titanic.app.dtos.crew_james_director_dto import (
     BookingCommand,
     JamesDirectorQuery,
@@ -59,8 +59,8 @@ class JamesDirectorInteractor(JamesDirectorUseCase):
                 )
             )
 
-        saved = await self._repository.upload_titanic_file(
+        saved = await self._repository.receive_uploaded_records(
             person_commands, booking_commands
         )
-        
-        return JamesDirectorResponse(saved=saved, received=len(schema))
+
+        return {"saved": saved}

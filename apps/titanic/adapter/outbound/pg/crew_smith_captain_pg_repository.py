@@ -32,5 +32,6 @@ class SmithCaptainPgRepository(SmithCaptainRepository):
 
         return SmithCaptainResponse(
             id=0,
-            name=f"[Smith] '{command.message}' 수신됨"
+            name="SmithCaptain",
+            reply=f"[Smith] '{command.message}' 수신됨"
         )

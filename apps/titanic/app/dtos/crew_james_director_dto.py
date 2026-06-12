@@ -44,3 +44,4 @@ class JamesDirectorResponse:
 class JamesIntroduceResponse:
     id: int
     name: str
+    answer: str = ""

@@ -1,4 +1,6 @@
 {
   "pythonVersion": "3.13",
-  "extraPaths": ["apps"]
+  "venvPath": "C:/Users/hi/anaconda3/envs",
+  "venv": "venv",
+  "extraPaths": [".", "apps"]
 }
