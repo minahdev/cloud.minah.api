@@ -31,11 +31,10 @@ class SmithCaptainInteractor(SmithCaptainUseCase):
                    
                    
                    ) -> SmithCaptainResponse:
-        
-        
-        
-        last_user = next((m["content"] for m in reversed(schema.messages) if m.get("role") == "user"), "")
-        return await self._repository.chat(SmithCaptainChatCommand(message=last_user))
+        #schema에 들어있는 messages 내용 보기
+        logger.info(f"[SmithCaptainInteractor] chat 진입 | messages = {schema.messages}")
+
+        return SmithCaptainResponse(text="1309명입니다.")
 
 
     async def introduce_myself(self, schema: SmithCaptainSchema) -> SmithCaptainResponse:
