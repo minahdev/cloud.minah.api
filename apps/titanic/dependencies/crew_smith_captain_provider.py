@@ -7,19 +7,23 @@ DIP 원칙:
   - 세션은 core 의 get_db 에서 주입받는다 (AsyncSession).
 """
 
-from titanic.adapter.outbound.pg.crew_smith_captain_pg_repository import SmithCaptainPgRepository
-from titanic.app.ports.output.crew_smith_captain_repository import SmithCaptainRepository
-from titanic.app.ports.input.crew_smith_captain_use_case import SmithCaptainUseCase
-from titanic.app.use_cases.crew_smith_captain_interactor import SmithCaptainInteractor
-
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db
 
+from titanic.adapter.outbound.pg.crew_smith_captain_pg_repository import SmithCaptainPgRepository
+from titanic.app.ports.output.crew_smith_captain_repository import SmithCaptainRepository
+from titanic.app.ports.input.crew_smith_captain_use_case import SmithCaptainUseCase
+from titanic.app.use_cases.crew_smith_captain_interactor import SmithCaptainInteractor
+
+
+def get_smith_captain_repository(
+    db: AsyncSession = Depends(get_db),
+) -> SmithCaptainRepository:
+    return SmithCaptainPgRepository(session=db)
 
 def get_crew_smith_captain_use_case(
-    db: AsyncSession = Depends(get_db),
+    repository: SmithCaptainRepository = Depends(get_smith_captain_repository),
 ) -> SmithCaptainUseCase:
-    repository: SmithCaptainRepository = SmithCaptainPgRepository(session=db)
     return SmithCaptainInteractor(repository=repository)

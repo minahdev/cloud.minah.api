@@ -1,7 +1,7 @@
 ﻿from sqlalchemy.ext.asyncio import AsyncSession
 
-from secom.adapter.outbound.pg.user_pg_repository import UserRepository
-from secom.app.dtos.user_model import User
+from users.adapter.outbound.pg.user_pg_repository import UserPgRepository as UserRepository
+from users.app.dtos.user_dto import User
 
 
 async def require_user(session: AsyncSession, login_user_id: str) -> User:

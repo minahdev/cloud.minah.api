@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Form, UploadFile
 
 from inbody.adapter.inbound.api.schemas.community_schema import (
     CommunityCheerRequest,
@@ -84,10 +84,7 @@ async def create_community_post(
         duration_min=req.durationMin,
         calories=req.calories,
     )
-    try:
-        dto = await use_case.create_post(command)
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e)) from e
+    dto = await use_case.create_post(command)
     return _post_dto_to_resp(dto)
 
 
@@ -97,10 +94,7 @@ async def upload_community_media(
     file: UploadFile = File(...),
     use_case: CommunityMediaUseCase = Depends(get_community_media_use_case),
 ) -> CommunityMediaUploadResponse:
-    try:
-        dto = await use_case.upload_media(userId, file)
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e)) from e
+    dto = await use_case.upload_media(userId, file)
     return CommunityMediaUploadResponse(url=dto.url, type=dto.type)
 
 
@@ -111,10 +105,7 @@ async def toggle_community_cheer(
     use_case: CommunityCheerUseCase = Depends(get_community_cheer_use_case),
 ) -> CommunityCheerResponse:
     command = CheerCommand(post_id=post_id, user_id=req.userId)
-    try:
-        dto = await use_case.toggle_cheer(command)
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e)) from e
+    dto = await use_case.toggle_cheer(command)
     return CommunityCheerResponse(cheerCount=dto.cheer_count, cheeredByMe=dto.cheered_by_me)
 
 
@@ -140,8 +131,5 @@ async def create_community_comment(
     use_case: CommunityCommentUseCase = Depends(get_community_comment_use_case),
 ) -> CommunityCommentResponse:
     command = CommentCreateCommand(post_id=post_id, user_id=req.userId, content=req.content)
-    try:
-        dto = await use_case.create_comment(command)
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e)) from e
+    dto = await use_case.create_comment(command)
     return _comment_dto_to_resp(dto)

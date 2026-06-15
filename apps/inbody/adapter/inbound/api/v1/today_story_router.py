@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
 from inbody.adapter.inbound.api.schemas.today_story_schema import TodayStoryPayload, TodayStoryResponse
 from inbody.app.dtos.today_story_dto import TodayStorySaveCommand, TodayStoryDto
@@ -24,10 +24,7 @@ async def list_today_stories(
     userId: str,
     use_case: TodayStoryUseCase = Depends(get_today_story_use_case),
 ):
-    try:
-        dtos = await use_case.list_stories(userId)
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e)) from e
+    dtos = await use_case.list_stories(userId)
     return [_dto_to_resp(d) for d in dtos]
 
 
@@ -37,10 +34,7 @@ async def get_today_story(
     date: str | None = None,
     use_case: TodayStoryUseCase = Depends(get_today_story_use_case),
 ):
-    try:
-        dto = await use_case.get(userId, date)
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e)) from e
+    dto = await use_case.get(userId, date)
     return _dto_to_resp(dto) if dto else None
 
 
@@ -55,8 +49,5 @@ async def put_today_story(
         mood=req.mood,
         story=req.story,
     )
-    try:
-        dto = await use_case.save(command)
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e)) from e
+    dto = await use_case.save(command)
     return _dto_to_resp(dto)

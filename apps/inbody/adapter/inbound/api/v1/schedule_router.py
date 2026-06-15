@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
 from inbody.adapter.inbound.api.schemas.schedule_schema import LessonPayload, LessonResponse
 from inbody.app.dtos.schedule_dto import LessonDeleteCommand, LessonDto, LessonListQuery, LessonSaveCommand
@@ -30,10 +30,7 @@ async def list_lessons(
     use_case: ScheduleUseCase = Depends(get_schedule_use_case),
 ):
     query = LessonListQuery(user_id=userId, member_user_id=memberUserId)
-    try:
-        dtos = await use_case.list_lessons(query)
-    except ValueError as e:
-        raise HTTPException(status_code=403, detail=str(e)) from e
+    dtos = await use_case.list_lessons(query)
     return [_dto_to_resp(d) for d in dtos]
 
 
@@ -53,10 +50,7 @@ async def put_lesson(
         record=req.record,
         created_at=req.createdAt,
     )
-    try:
-        dto = await use_case.save_lesson(command)
-    except ValueError as e:
-        raise HTTPException(status_code=403, detail=str(e)) from e
+    dto = await use_case.save_lesson(command)
     return _dto_to_resp(dto)
 
 
@@ -72,8 +66,5 @@ async def delete_lesson(
         client_id=client_id,
         member_user_id=memberUserId,
     )
-    try:
-        await use_case.delete_lesson(command)
-    except ValueError as e:
-        raise HTTPException(status_code=403, detail=str(e)) from e
+    await use_case.delete_lesson(command)
     return {"ok": True}

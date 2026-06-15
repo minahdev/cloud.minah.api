@@ -7,19 +7,23 @@ DIP 원칙:
   - 세션은 core 의 get_db 에서 주입받는다 (AsyncSession).
 """
 
-from titanic.adapter.outbound.pg.passenger_jack_trainer_pg_repository import JackTrainerPgRepository
-from titanic.app.ports.output.passenger_jack_trainer_repository import JackTrainerRepository
-from titanic.app.ports.input.passenger_jack_trainer_use_case import JackTrainerUseCase
-from titanic.app.use_cases.passenger_jack_trainer_interactor import JackTrainerInteractor
-
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db
 
+from titanic.adapter.outbound.pg.passenger_jack_trainer_pg_repository import JackTrainerPgRepository
+from titanic.app.ports.output.passenger_jack_trainer_repository import JackTrainerRepository
+from titanic.app.ports.input.passenger_jack_trainer_use_case import JackTrainerUseCase
+from titanic.app.use_cases.passenger_jack_trainer_interactor import JackTrainerInteractor
+
+
+def get_jack_trainer_repository(
+    db: AsyncSession = Depends(get_db),
+) -> JackTrainerRepository:
+    return JackTrainerPgRepository(session=db)
 
 def get_jack_trainer(
-    db: AsyncSession = Depends(get_db),
+    repository: JackTrainerRepository = Depends(get_jack_trainer_repository),
 ) -> JackTrainerUseCase:
-    repository: JackTrainerRepository = JackTrainerPgRepository(session=db)
     return JackTrainerInteractor(repository=repository)

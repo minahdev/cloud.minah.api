@@ -94,16 +94,17 @@ def _import_orm_models() -> None:
     # ensure apps dir is present.
     if _APPS_DIR.exists() and str(_APPS_DIR) not in sys.path:
         sys.path.insert(0, str(_APPS_DIR))
-    import secom.app.dtos.schedule_access_grant_model  # noqa: F401
-    import secom.app.dtos.schedule_access_model  # noqa: F401
-    import secom.app.dtos.schedule_invite_code_model  # noqa: F401
-    import secom.app.dtos.user_information_model  # noqa: F401
-    import secom.app.dtos.user_model  # noqa: F401
-    import inbody.adapter.outbound.orm.community_model  # noqa: F401
-    import inbody.adapter.outbound.orm.notice_model  # noqa: F401
-    import inbody.adapter.outbound.orm.schedule_model  # noqa: F401
-    import inbody.adapter.outbound.orm.today_story_model  # noqa: F401
-    import inbody.adapter.outbound.orm.train_log_model  # noqa: F401
+    import users.app.dtos.schedule_access_grant_dto  # noqa: F401
+    import users.app.dtos.schedule_access_dto  # noqa: F401
+    import users.app.dtos.schedule_invite_code_dto  # noqa: F401
+    import users.app.dtos.user_information_dto  # noqa: F401
+    import users.app.dtos.user_dto  # noqa: F401
+    import inbody.adapter.outbound.orm.community_orm  # noqa: F401
+    import inbody.adapter.outbound.orm.notice_orm  # noqa: F401
+    import inbody.adapter.outbound.orm.schedule_orm  # noqa: F401
+    import inbody.adapter.outbound.orm.today_story_orm  # noqa: F401
+    import inbody.adapter.outbound.orm.train_log_orm  # noqa: F401
+    import inbody.adapter.outbound.orm.food_orm  # noqa: F401
     import titanic.adapter.outbound.orm.passenger_jack_trainer_orm  # noqa: F401
     import titanic.adapter.outbound.orm.passenger_rose_model_orm  # noqa: F401
 

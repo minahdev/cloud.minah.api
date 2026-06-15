@@ -8,7 +8,7 @@ from inbody.adapter.outbound.pg.schedule_pg_repository import SchedulePgReposito
 from inbody.adapter.outbound.pg.user_lookup_pg_repository import UserLookupPgAdapter
 from inbody.app.ports.input.schedule_use_case import ScheduleUseCase
 from inbody.app.use_cases.schedule_interactor import ScheduleInteractor
-from secom.app.use_cases.schedule_access_interactor import ScheduleAccessService
+from users.app.use_cases.schedule_access_interactor import ScheduleAccessService
 
 
 def get_schedule_use_case(

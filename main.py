@@ -34,13 +34,13 @@ from core.database import (
     create_database_tables_windows_threadsafe,
     get_db,
 )
-from secom.adapter.inbound.api.schemas.mypage_schema import (
+from users.adapter.inbound.api.schemas.mypage_schema import (
     MyPageProfileResponse,
     MyPageProfileSchema,
 )
-from secom.adapter.inbound.api.schemas.user_schema import LoginSchema, UserSchema
-from secom.app.use_cases.schedule_access_interactor import ScheduleAccessService
-from secom.app.use_cases.user_interactor import UserService
+from users.adapter.inbound.api.schemas.user_schema import LoginSchema, UserSchema
+from users.app.use_cases.schedule_access_interactor import ScheduleAccessService
+from users.app.use_cases.user_interactor import UserService
 from inbody.community_media import get_community_media_storage
 from inbody.router import router as inbody_router
 from titanic.adapter.inbound.api import titanic_router

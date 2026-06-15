@@ -8,7 +8,7 @@ from inbody.app.ports.input.schedule_use_case import ScheduleUseCase
 from inbody.app.ports.output.schedule_repository import ScheduleRepository
 from inbody.app.ports.output.user_lookup_port import UserLookupPort
 from inbody.app.dtos.user_dto import InbodyUserDto
-from secom.app.use_cases.schedule_access_interactor import ScheduleAccessService
+from users.app.use_cases.schedule_access_interactor import ScheduleAccessService
 
 logger = logging.getLogger(__name__)
 

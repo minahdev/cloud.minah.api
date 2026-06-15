@@ -7,19 +7,23 @@ DIP 원칙:
   - 세션은 core 의 get_db 에서 주입받는다 (AsyncSession).
 """
 
-from titanic.adapter.outbound.pg.passenger_rose_model_pg_repository import RoseModelPgRepository
-from titanic.app.ports.output.passenger_rose_model_repository import RoseModelRepository
-from titanic.app.ports.input.passenger_rose_model_use_case import RoseModelUseCase
-from titanic.app.use_cases.passenger_rose_model_interactor import RoseModelInteractor
-
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db
 
+from titanic.adapter.outbound.pg.passenger_rose_model_pg_repository import RoseModelPgRepository
+from titanic.app.ports.output.passenger_rose_model_repository import RoseModelRepository
+from titanic.app.ports.input.passenger_rose_model_use_case import RoseModelUseCase
+from titanic.app.use_cases.passenger_rose_model_interactor import RoseModelInteractor
+
+
+def get_rose_model_repository(
+    db: AsyncSession = Depends(get_db),
+) -> RoseModelRepository:
+    return RoseModelPgRepository(session=db)
 
 def get_rose_model(
-    db: AsyncSession = Depends(get_db),
+    repository: RoseModelRepository = Depends(get_rose_model_repository),
 ) -> RoseModelUseCase:
-    repository: RoseModelRepository = RoseModelPgRepository(session=db)
     return RoseModelInteractor(repository=repository)

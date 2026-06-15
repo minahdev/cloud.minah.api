@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
 from inbody.adapter.inbound.api.schemas.notice_schema import NoticeCreate, NoticeResponse
 from inbody.app.dtos.notice_dto import NoticeCreateCommand, NoticeDeleteCommand, NoticeDto
@@ -34,10 +34,7 @@ async def create_notice(
     use_case: NoticeUseCase = Depends(get_notice_use_case),
 ) -> NoticeResponse:
     command = NoticeCreateCommand(user_id=req.userId, title=req.title, body=req.body)
-    try:
-        dto = await use_case.create_notice(command)
-    except ValueError as e:
-        raise HTTPException(status_code=403, detail=str(e)) from e
+    dto = await use_case.create_notice(command)
     return _dto_to_resp(dto)
 
 
@@ -48,8 +45,5 @@ async def delete_notice(
     use_case: NoticeUseCase = Depends(get_notice_use_case),
 ):
     command = NoticeDeleteCommand(user_id=userId, notice_id=notice_id)
-    try:
-        await use_case.delete_notice(command)
-    except ValueError as e:
-        raise HTTPException(status_code=403, detail=str(e)) from e
+    await use_case.delete_notice(command)
     return {"ok": True}

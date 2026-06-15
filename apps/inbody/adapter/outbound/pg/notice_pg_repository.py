@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from inbody.adapter.outbound.orm.notice_model import Notice
+from inbody.adapter.outbound.orm.notice_orm import Notice
 from inbody.app.dtos.notice_dto import NoticeDto
 from inbody.app.ports.output.notice_repository import NoticeRepository
 

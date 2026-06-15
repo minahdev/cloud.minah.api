@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
 from inbody.adapter.inbound.api.schemas.train_log_schema import TrainDailyLogPayload, TrainDailyLogResponse
 from inbody.app.dtos.train_log_dto import TrainLogDto, TrainLogSaveCommand
@@ -28,10 +28,7 @@ async def list_train_logs(
     userId: str,
     use_case: TrainLogUseCase = Depends(get_train_log_use_case),
 ):
-    try:
-        dtos = await use_case.list_logs(userId)
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e)) from e
+    dtos = await use_case.list_logs(userId)
     return [_dto_to_resp(d) for d in dtos]
 
 
@@ -41,10 +38,7 @@ async def get_train_log_day(
     date: str,
     use_case: TrainLogUseCase = Depends(get_train_log_use_case),
 ):
-    try:
-        dto = await use_case.get(userId, date)
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e)) from e
+    dto = await use_case.get(userId, date)
     return _dto_to_resp(dto) if dto else None
 
 
@@ -63,8 +57,5 @@ async def put_train_log(
         memo=req.memo,
         exercise_minutes=req.exerciseMinutes,
     )
-    try:
-        dto = await use_case.save(command)
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e)) from e
+    dto = await use_case.save(command)
     return _dto_to_resp(dto)

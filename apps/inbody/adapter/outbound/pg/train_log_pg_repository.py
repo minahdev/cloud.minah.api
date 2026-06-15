@@ -5,7 +5,7 @@ from datetime import date, datetime, timezone
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from inbody.adapter.outbound.orm.train_log_model import TrainDailyLog
+from inbody.adapter.outbound.orm.train_log_orm import TrainDailyLog
 from inbody.app.dtos.train_log_dto import TrainLogDto
 from inbody.app.ports.output.train_log_repository import TrainLogRepository
 

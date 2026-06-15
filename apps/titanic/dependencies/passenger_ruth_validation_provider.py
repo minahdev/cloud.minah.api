@@ -7,19 +7,23 @@ DIP 원칙:
   - 세션은 core 의 get_db 에서 주입받는다 (AsyncSession).
 """
 
-from titanic.adapter.outbound.pg.passenger_ruth_validation_pg_repository import RuthValidationPgRepository
-from titanic.app.ports.output.passenger_ruth_validation_repository import RuthValidationRepository
-from titanic.app.ports.input.passenger_ruth_validation_use_case import RuthValidationUseCase
-from titanic.app.use_cases.passenger_ruth_validation_interactor import RuthValidationInteractor
-
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db
 
+from titanic.adapter.outbound.pg.passenger_ruth_validation_pg_repository import RuthValidationPgRepository
+from titanic.app.ports.output.passenger_ruth_validation_repository import RuthValidationRepository
+from titanic.app.ports.input.passenger_ruth_validation_use_case import RuthValidationUseCase
+from titanic.app.use_cases.passenger_ruth_validation_interactor import RuthValidationInteractor
+
+
+def get_ruth_validation_repository(
+    db: AsyncSession = Depends(get_db),
+) -> RuthValidationRepository:
+    return RuthValidationPgRepository(session=db)
 
 def get_passenger_ruth_survivor_use_case(
-    db: AsyncSession = Depends(get_db),
+    repository: RuthValidationRepository = Depends(get_ruth_validation_repository),
 ) -> RuthValidationUseCase:
-    repository: RuthValidationRepository = RuthValidationPgRepository(session=db)
     return RuthValidationInteractor(repository=repository)

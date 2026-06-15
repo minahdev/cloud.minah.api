@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from inbody.adapter.outbound.orm.community_model import CommunityPostCheer
+from inbody.adapter.outbound.orm.community_orm import CommunityPostCheer
 from inbody.app.dtos.community_dto import CheerDto
 from inbody.app.ports.output.community_cheer_repository import CommunityCheerRepository
 

@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from inbody.adapter.outbound.orm.community_model import CommunityComment
+from inbody.adapter.outbound.orm.community_orm import CommunityComment
 from inbody.app.dtos.community_dto import CommentDto
 from inbody.app.ports.output.community_comment_repository import CommunityCommentRepository
 

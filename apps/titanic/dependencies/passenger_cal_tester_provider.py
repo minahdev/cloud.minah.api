@@ -7,19 +7,23 @@ DIP 원칙:
   - 세션은 core 의 get_db 에서 주입받는다 (AsyncSession).
 """
 
-from titanic.adapter.outbound.pg.passenger_cal_tester_pg_repository import CalTesterPgRepository
-from titanic.app.ports.output.passenger_cal_tester_repository import CalTesterRepository
-from titanic.app.ports.input.passenger_cal_tester_use_case import CalTesterUseCase
-from titanic.app.use_cases.passenger_cal_tester_interactor import CalTesterInteractor
-
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db
 
+from titanic.adapter.outbound.pg.passenger_cal_tester_pg_repository import CalTesterPgRepository
+from titanic.app.ports.output.passenger_cal_tester_repository import CalTesterRepository
+from titanic.app.ports.input.passenger_cal_tester_use_case import CalTesterUseCase
+from titanic.app.use_cases.passenger_cal_tester_interactor import CalTesterInteractor
+
+
+def get_cal_tester_repository(
+    db: AsyncSession = Depends(get_db),
+) -> CalTesterRepository:
+    return CalTesterPgRepository(session=db)
 
 def get_passenger_cal_tester_use_case(
-    db: AsyncSession = Depends(get_db),
+    repository: CalTesterRepository = Depends(get_cal_tester_repository),
 ) -> CalTesterUseCase:
-    repository: CalTesterRepository = CalTesterPgRepository(session=db)
     return CalTesterInteractor(repository=repository)

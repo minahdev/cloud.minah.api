@@ -17,9 +17,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db
 
+def get_andrews_architect_repository(
+      db: AsyncSession = Depends(get_db)
+) -> AndrewsArchitectRepository:
+      return AndrewsArchitectPgRepository(session=db)
 
 def get_crew_andrews_architect_use_case(
-    db: AsyncSession = Depends(get_db),
+    repository : AndrewsArchitectRepository = Depends(get_andrews_architect_repository)
 ) -> AndrewsArchitectUseCase:
-    repository: AndrewsArchitectRepository = AndrewsArchitectPgRepository(session=db)
     return AndrewsArchitectInteractor(repository=repository)

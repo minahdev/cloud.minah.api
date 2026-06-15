@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from inbody.adapter.outbound.orm.schedule_model import Lesson
+from inbody.adapter.outbound.orm.schedule_orm import Lesson
 from inbody.app.dtos.schedule_dto import LessonDto
 from inbody.app.ports.output.schedule_repository import ScheduleRepository
 

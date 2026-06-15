@@ -5,7 +5,7 @@ from datetime import date, datetime, timezone
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from inbody.adapter.outbound.orm.today_story_model import TodayStory
+from inbody.adapter.outbound.orm.today_story_orm import TodayStory
 from inbody.app.dtos.today_story_dto import TodayStoryDto
 from inbody.app.ports.output.today_story_repository import TodayStoryRepository
 
