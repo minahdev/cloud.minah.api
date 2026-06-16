@@ -1,6 +1,6 @@
 # titanic — 앱 규칙
 
-타이타닉 앱 전용 규칙. 백엔드 공통 규칙은 [minahai/_claude/CLAUDE.md](../../../_claude/CLAUDE.md) 참고.
+타이타닉 앱 전용 규칙. 백엔드 공통 규칙은 [minahai/CLAUDE.md](../../../CLAUDE.md) 참고.
 
 ---
 
@@ -77,3 +77,13 @@ from titanic.dependencies.passenger_jack_trainer_provider import get_jack_traine
 # ❌ 금지
 from minahai.apps.titanic.app.ports.input.passenger_jack_trainer_use_case import JackTrainerUseCase
 ```
+
+
+## 타이타닉 도메인 문서 연결 
+
+* 타이타닉 도메인 문서 연결
+* 타이타닉 피쳐 정리 : [[titanic-features]]
+* 타이타닉 머신 러닝 : [[titanic-machine-learning]]
+* 타이타닉 ERD : [[titanic-erd]]
+* 타이타닉 NF : [[titanic-nf]]
+* 타이타닉 알고리즘 : [[titanic-algorithm]]

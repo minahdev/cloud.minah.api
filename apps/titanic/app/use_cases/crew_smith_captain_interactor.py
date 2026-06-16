@@ -2,8 +2,12 @@ from __future__ import annotations
 
 from fastapi import Depends
 
+from titanic.app.ports.input.crew_walter_roaster_use_case import WalterRoasterUseCase
+from titanic.app.ports.input.passenger_cal_tester_use_case import CalTesterUseCase
 from titanic.app.ports.input.passenger_jack_trainer_use_case import JackTrainerUseCase
 from titanic.app.ports.input.passenger_rose_model_use_case import RoseModelUseCase
+from titanic.dependencies.crew_walter_roaster_provider import get_crew_walter_roaster_use_case
+from titanic.dependencies.passenger_cal_tester_provider import get_passenger_cal_tester_use_case
 from titanic.dependencies.passenger_jack_trainer_provider import get_jack_trainer
 from titanic.dependencies.passenger_rose_model_provider import get_rose_model
 from titanic.adapter.inbound.api.schemas.crew_smith_captain_schema import (
@@ -22,17 +26,22 @@ class SmithCaptainInteractor(SmithCaptainUseCase):
 
     def __init__(self, repository: SmithCaptainRepository) -> None:
         self._repository = repository
+        self.rose: RoseModelUseCase = Depends(get_rose_model),
+        self.jack: JackTrainerUseCase = Depends(get_jack_trainer)
+        self.cal: CalTesterUseCase = Depends(get_passenger_cal_tester_use_case)
+        self.walter: WalterRoasterUseCase = Depends(get_crew_walter_roaster_use_case)
 
 
 
-    async def chat(self, schema: ChatSchema,
-                rose: RoseModelUseCase = Depends(get_rose_model),
-                jack: JackTrainerUseCase = Depends(get_jack_trainer)
-                   
-                   
-                   ) -> SmithCaptainResponse:
+    async def chat(self, schema: ChatSchema) -> SmithCaptainResponse:
         #schema에 들어있는 messages 내용 보기
         logger.info(f"[SmithCaptainInteractor] chat 진입 | messages = {schema.messages}")
+        train_set = self.walter.get_train_set()
+        test_set = self.walter.get_test_set()
+        self.jack.train_model(train_set)
+        self.cal.test_model(test_set)
+        
+
 
         return SmithCaptainResponse(text="1309명입니다.")
 

@@ -16,11 +16,11 @@ passenger_cal_tester_router = APIRouter(prefix="/cal", tags=["cal"])
 
 @passenger_cal_tester_router.get("/myself", response_model=CalTesterResponse)
 async def introduce_myself(
-    cal: CalTesterUseCase = Depends(get_passenger_cal_tester_use_case))-> CalTesterResponse:
-    
-    return await cal.introduce_myself(
-        CalTesterSchema(
-            id=7,
-            name="Caledon Hockley",
-            )
-        )
+    cal: CalTesterUseCase = Depends(get_passenger_cal_tester_use_case)) -> CalTesterResponse:
+    return await cal.introduce_myself(CalTesterSchema(id=7, name="Caledon Hockley"))
+
+
+@passenger_cal_tester_router.get("/ranking")
+async def get_model_ranking(
+    cal: CalTesterUseCase = Depends(get_passenger_cal_tester_use_case)):
+    return await cal.test_model(test_set=None)
