@@ -1,4 +1,4 @@
-"""
+﻿"""
 RuthValidation 의존성 조립소 (DIP 팩토리).
 
 DIP 원칙:
@@ -12,18 +12,18 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db
 
-from titanic.adapter.outbound.pg.passenger_ruth_validation_pg_repository import RuthValidationPgRepository
-from titanic.app.ports.output.passenger_ruth_validation_repository import RuthValidationRepository
+from titanic.adapter.outbound.repositories.passenger_ruth_validation_repository import RuthValidationRepository
+from titanic.app.ports.output.passenger_ruth_validation_port import RuthValidationPort
 from titanic.app.ports.input.passenger_ruth_validation_use_case import RuthValidationUseCase
 from titanic.app.use_cases.passenger_ruth_validation_interactor import RuthValidationInteractor
 
 
 def get_ruth_validation_repository(
     db: AsyncSession = Depends(get_db),
-) -> RuthValidationRepository:
-    return RuthValidationPgRepository(session=db)
+) -> RuthValidationPort:
+    return RuthValidationRepository(session=db)
 
 def get_passenger_ruth_survivor_use_case(
-    repository: RuthValidationRepository = Depends(get_ruth_validation_repository),
+    repository: RuthValidationPort = Depends(get_ruth_validation_repository),
 ) -> RuthValidationUseCase:
     return RuthValidationInteractor(repository=repository)

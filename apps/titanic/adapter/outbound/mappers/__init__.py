@@ -1,5 +1,4 @@
 from titanic.adapter.outbound.mappers.passenger_mapper import PassengerMapper
-from titanic.adapter.outbound.mappers.booking_mapper import BookingMapper
 from titanic.adapter.outbound.mappers.passenger_jack_trainer_mapper import PassengerJackTrainerMapper
 from titanic.adapter.outbound.mappers.passenger_rose_model_mapper import RoseModelMapper
 from titanic.adapter.outbound.mappers.crew_andrews_architect_mapper import AndrewsArchitectMapper
@@ -15,7 +14,6 @@ from titanic.adapter.outbound.mappers.passenger_ruth_validation_mapper import Ru
 
 __all__ = [
     "PassengerMapper",
-    "BookingMapper",
     "PassengerJackTrainerMapper",
     "RoseModelMapper",
     "AndrewsArchitectMapper",

@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.dialects.postgresql import insert
@@ -6,7 +6,7 @@ from sqlalchemy.dialects.postgresql import insert
 from titanic.adapter.outbound.orm.passenger_rose_model_orm import RoseModelOrm as BookingModel
 from titanic.adapter.outbound.orm.passenger_jack_trainer_orm import PassengerModel
 from titanic.app.dtos.crew_james_director_dto import BookingCommand, PassengerCommand
-from titanic.app.ports.output.crew_james_director_repository import JamesDirectorRepository
+from titanic.app.ports.output.crew_james_director_port import JamesDirectorPort
 from titanic.app.dtos.crew_james_director_dto import JamesDirectorResponse, JamesDirectorQuery, JamesIntroduceResponse
 
 import logging
@@ -14,7 +14,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class JamesDirectorPgRepository(JamesDirectorRepository):
+class JamesDirectorRepository(JamesDirectorPort):
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 

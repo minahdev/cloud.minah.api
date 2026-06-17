@@ -1,4 +1,4 @@
-"""
+﻿"""
 LoweBoat 의존성 조립소 (DIP 팩토리).
 
 DIP 원칙:
@@ -12,18 +12,18 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db
 
-from titanic.adapter.outbound.pg.crew_lowe_boat_pg_repository import LoweBoatPgRepository
-from titanic.app.ports.output.crew_lowe_boat_repository import LoweBoatRepository
+from titanic.adapter.outbound.repositories.crew_lowe_boat_repository import LoweBoatRepository
+from titanic.app.ports.output.crew_lowe_boat_port import LoweBoatPort
 from titanic.app.ports.input.crew_lowe_boat_use_case import LoweBoatUseCase
 from titanic.app.use_cases.crew_lowe_boat_interactor import LoweBoatInteractor
 
 
 def get_lowe_boat_repository(
     db: AsyncSession = Depends(get_db),
-) -> LoweBoatRepository:
-    return LoweBoatPgRepository(session=db)
+) -> LoweBoatPort:
+    return LoweBoatRepository(session=db)
 
 def get_crew_lowe_boat_use_case(
-    repository: LoweBoatRepository = Depends(get_lowe_boat_repository),
+    repository: LoweBoatPort = Depends(get_lowe_boat_repository),
 ) -> LoweBoatUseCase:
     return LoweBoatInteractor(repository=repository)

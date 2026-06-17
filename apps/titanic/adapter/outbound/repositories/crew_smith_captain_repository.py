@@ -1,15 +1,15 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from titanic.app.dtos.crew_smith_captain_dto import SmithCaptainResponse, SmithCaptainQuery, SmithCaptainChatCommand
-from titanic.app.ports.output.crew_smith_captain_repository import SmithCaptainRepository
+from titanic.app.ports.output.crew_smith_captain_port import SmithCaptainPort
 
 import logging
 
 logger = logging.getLogger(__name__)
 
-class SmithCaptainPgRepository(SmithCaptainRepository):
+class SmithCaptainRepository(SmithCaptainPort):
 
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
