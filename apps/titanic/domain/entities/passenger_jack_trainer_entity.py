@@ -3,49 +3,47 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
 
-from titanic.domain.value_objects.passenger_jack_trainer_vo import (
-    Age,
-    FamilyRelation,
-    Gender,
-    PassengerId,
-    PassengerName,
-    SurvivalStatus,
-)
+from titanic.domain.value_objects.survived_vo import Survived, SurvivedType
+from titanic.domain.value_objects.gender_vo import Gender
+from titanic.domain.value_objects.age_vo import Age
+from titanic.domain.value_objects.family_vo import FamilyRelation
 
 
 @dataclass
 class PassengerEntity:
     id: int
-    passenger_id: Optional[PassengerId]
-    name: Optional[PassengerName]
+    passenger_id: Optional[int]
+    name: Optional[str]
     gender: Gender
     age: Age
-    family_relation: FamilyRelation
-    survival_status: SurvivalStatus
+    family: FamilyRelation
+    survived: Survived
 
     def is_high_risk(self) -> bool:
         return (
-            not self.gender.is_female()
+            not self.gender.is_female
             and not self.age.is_minor
-            and self.family_relation.is_alone
+            and self.family.is_alone
         )
 
     def has_family(self) -> bool:
-        return not self.family_relation.is_alone
+        return not self.family.is_alone
 
     def record_survival(self, survived: bool) -> None:
-        self.survival_status = SurvivalStatus(survived=survived)
+        self.survived = Survived(
+            value=SurvivedType.SURVIVED if survived else SurvivedType.NOT_SURVIVED
+        )
 
     @classmethod
-    def from_orm(cls, orm) -> PassengerEntity:
+    def from_orm(cls, orm) -> "PassengerEntity":
         return cls(
             id=orm.id,
-            passenger_id=PassengerId(orm.passenger_id) if orm.passenger_id else None,
-            name=PassengerName(orm.name) if orm.name else None,
+            passenger_id=orm.passenger_id,
+            name=orm.name,
             gender=Gender.from_raw(orm.gender),
             age=Age.from_raw(orm.age),
-            family_relation=FamilyRelation.from_raw(orm.sib_sp, orm.parch),
-            survival_status=SurvivalStatus.from_raw(orm.survived),
+            family=FamilyRelation.from_raw(orm.sib_sp, orm.parch),
+            survived=Survived.from_raw(orm.survived),
         )
 
     def __eq__(self, other: object) -> bool:
@@ -57,5 +55,4 @@ class PassengerEntity:
         return hash(self.id)
 
 
-# backward compat alias
 Passenger = PassengerEntity

@@ -19,14 +19,10 @@ class WalterRoasterRepository(WalterRoasterPort):
 
     
     async def get_train_set(self) -> pd.DataFrame:
-        '''Survived 컬럼이 있는 데이터 전체를 데이터프레임으로 변환'''
+        '''전체 승객 데이터를 데이터프레임으로 변환 (survived NULL 포함)'''
         result = await self.session.execute(
             select(JackTrainerOrm, RoseModelOrm)
             .join(RoseModelOrm, RoseModelOrm.passenger_id == JackTrainerOrm.passenger_id, isouter=True)
-            .where(
-                JackTrainerOrm.survived.isnot(None) &
-                (JackTrainerOrm.survived != "")
-            )
         )
         rows = result.all()
         return pd.DataFrame([

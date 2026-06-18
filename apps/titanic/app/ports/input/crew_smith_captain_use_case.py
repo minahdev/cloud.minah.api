@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any
 from titanic.adapter.inbound.api.schemas.crew_smith_captain_schema import SmithCaptainSchema, ChatSchema
 from titanic.app.dtos.crew_smith_captain_dto import SmithCaptainResponse
 
@@ -10,6 +11,7 @@ class SmithCaptainUseCase(ABC):
         pass
 
     @abstractmethod
-    async def chat(self, schema: ChatSchema) -> SmithCaptainResponse:
+    async def chat(self, question: str) -> SmithCaptainResponse:
         '''사용자 자연어 입력을 받아 채팅 응답을 반환'''
         pass
+

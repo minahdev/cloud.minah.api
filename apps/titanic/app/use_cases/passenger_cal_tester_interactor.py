@@ -115,7 +115,7 @@ def _preprocess_test(df: pd.DataFrame) -> tuple[list[list[float]], list[int]]:
     test["sib_sp"] = pd.to_numeric(test["sib_sp"], errors="coerce").fillna(0)
     test["parch"] = pd.to_numeric(test["parch"], errors="coerce").fillna(0)
 
-    drop_cols = ["passenger_id", "name", "ticket", "cabin"]
-    test = test.drop(columns=[c for c in drop_cols if c in test.columns])
+    feature_cols = ["gender", "age", "sib_sp", "parch", "pclass", "fare", "embarked"]
+    test = test[feature_cols]
 
     return test.values.tolist(), y_test

@@ -6,7 +6,7 @@ from titanic.app.dtos.passenger_jack_trainer_dto import JackTrainerResponse
 class JackTrainerUseCase(ABC):
 
     @abstractmethod
-    async def train_model(self, train_set) -> dict[str, Any]:
+    async def train_model(self, X_train: list[list[float]], y_label: list[int]) -> dict[str, Any]:
         '''로즈가 제안한 모델들을 훈련시키는 메소드'''
 
     @abstractmethod

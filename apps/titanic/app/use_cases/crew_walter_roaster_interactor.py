@@ -27,8 +27,8 @@ class WalterRoasterInteractor(WalterRoasterUseCase):
         '''월터가 DB에서 test set 만 가져오는 메소드'''
         return await self._repository.get_test_set()
 
-    async def introduce_myself(self, schema: WalterRoasterSchema) -> WalterRoasterResponse:
-        return await self._repository.introduce_myself(WalterRoasterQuery(
+    def introduce_myself(self, schema: WalterRoasterSchema) -> WalterRoasterResponse:
+        return self._repository.introduce_myself(WalterRoasterQuery(
             id=schema.id,
             name=schema.name
         ))

@@ -1,7 +1,10 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import numpy as np
-from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
+from xgboost import XGBClassifier
+from lightgbm import LGBMClassifier
+from catboost import CatBoostClassifier
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
@@ -19,7 +22,7 @@ class XGBoostStrategy(SurvivalModelStrategy):
     def name(self) -> str: return "XGBoost"
     @property
     def description(self) -> str: return "그래디언트 부스팅 기반 고성능 모델."
-    def __init__(self) -> None: self._model = GradientBoostingClassifier(n_estimators=100, random_state=42)
+    def __init__(self) -> None: self._model = XGBClassifier(n_estimators=100, random_state=42, eval_metric="logloss", verbosity=0)
     def fit(self, X, y) -> None: self._model.fit(X, y)
     def predict(self, X) -> list[int]: return self._model.predict(X).tolist()
     def predict_proba(self, X) -> list[float]: return self._model.predict_proba(X)[:, 1].tolist()
@@ -41,7 +44,7 @@ class LightGBMStrategy(SurvivalModelStrategy):
     def name(self) -> str: return "LightGBM"
     @property
     def description(self) -> str: return "리프 중심 트리 분할 방식."
-    def __init__(self) -> None: self._model = GradientBoostingClassifier(n_estimators=100, random_state=42)
+    def __init__(self) -> None: self._model = LGBMClassifier(n_estimators=100, random_state=42, verbose=-1)
     def fit(self, X, y) -> None: self._model.fit(X, y)
     def predict(self, X) -> list[int]: return self._model.predict(X).tolist()
     def predict_proba(self, X) -> list[float]: return self._model.predict_proba(X)[:, 1].tolist()
@@ -52,7 +55,7 @@ class CatBoostStrategy(SurvivalModelStrategy):
     def name(self) -> str: return "CatBoost"
     @property
     def description(self) -> str: return "범주형 데이터 처리에 최적화된 부스팅."
-    def __init__(self) -> None: self._model = GradientBoostingClassifier(n_estimators=100, random_state=42)
+    def __init__(self) -> None: self._model = CatBoostClassifier(iterations=100, random_state=42, verbose=0)
     def fit(self, X, y) -> None: self._model.fit(X, y)
     def predict(self, X) -> list[int]: return self._model.predict(X).tolist()
     def predict_proba(self, X) -> list[float]: return self._model.predict_proba(X)[:, 1].tolist()
