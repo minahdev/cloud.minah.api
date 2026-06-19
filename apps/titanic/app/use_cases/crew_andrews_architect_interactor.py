@@ -11,22 +11,11 @@ from titanic.adapter.inbound.api.schemas.crew_andrews_architect_schema import (
 from titanic.app.dtos.crew_andrews_architect_dto import AndrewsArchitectResponse, AndrewsArchitectQuery
 from titanic.app.ports.input.crew_andrews_architect_use_case import AndrewsArchitectUseCase
 from titanic.app.ports.output.crew_andrews_architect_port import AndrewsArchitectPort
+from titanic.domain.constants.intent_map import INTENT_MAP
 
 import logging
 
 logger = logging.getLogger(__name__)
-
-INTENT_MAP: dict[str, set[str]] = {
-    "AGE_EXTREME":      {"최고령", "최연소", "아기"},
-    "FAMILY_ANALYSIS":  {"가족", "대가족", "동반"},
-    "FARE_ANALYSIS":    {"요금", "공짜"},
-    "PCLASS_SURVIVAL":  {"등석", "등급", "차이"},
-    "EMBARKATION":      {"항구"},
-    "PASSENGER_SEARCH": {"누구", "이름", "찾", "검색"},
-    "MODEL_TRAIN":      {"학습", "훈련", "모델", "알고리즘", "정확도", "성능"},
-    "SURVIVAL_PREDICT": {"살", "살았", "생존", "살아남", "죽었", "사망", "예측", "확률", "survived", "살까", "죽을까", "남자", "여자", "남성", "여성"},
-    "STATISTICS":       {"몇", "명", "총", "전체", "인원", "통계", "비율", "중요", "영향"},
-}
 
 class AndrewsArchitectInteractor(AndrewsArchitectUseCase):
 
@@ -275,7 +264,28 @@ class AndrewsArchitectInteractor(AndrewsArchitectUseCase):
     def _answer_passenger_search(self, question: str, train_set: pd.DataFrame) -> str:
         df = train_set.copy()
         df["survived"] = pd.to_numeric(df["survived"], errors="coerce")
-        total = len(df)
+
+        is_female = any(k in question for k in ["여자", "여성"])
+        is_male   = any(k in question for k in ["남자", "남성"])
+        want_survived = any(k in question for k in ["생존", "살아", "살았", "살아남"])
+
+        if is_female or is_male:
+            gender = "female" if is_female else "male"
+            label  = "여성" if is_female else "남성"
+            sub = df[df["gender"] == gender]
+            survived_count = int(sub["survived"].sum())
+            total_count    = len(sub)
+            if want_survived:
+                return (
+                    f"생존자 중 {label}은 {survived_count}명입니다. "
+                    f"전체 {label} 탑승객 {total_count}명 중 {survived_count}명({survived_count/total_count:.1%})이 생존했습니다."
+                )
+            return (
+                f"타이타닉에 탑승한 {label} 승객은 총 {total_count}명이며, "
+                f"이 중 {survived_count}명({survived_count/total_count:.1%})이 생존했습니다."
+            )
+
+        total    = len(df)
         survived = int(df["survived"].sum())
         return (
             f"타이타닉에 탑승한 승객은 총 {total}명입니다. "

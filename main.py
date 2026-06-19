@@ -39,7 +39,14 @@ from users.adapter.inbound.api.schemas.mypage_schema import (
     MyPageProfileSchema,
 )
 from users.adapter.inbound.api.schemas.user_schema import LoginSchema, UserSchema
+from users.adapter.outbound.pg.login_pg_repository import LoginPgRepository
+from users.adapter.outbound.pg.signup_pg_repository import SignupPgRepository
+from users.adapter.outbound.pg.user_pg_information_repository import UserInformationRepository
+from users.adapter.outbound.pg.user_pg_repository import UserPgRepository
+from users.app.use_cases.login_interactor import LoginInteractor
+from users.app.use_cases.mypage_interactor import MyPageInteractor
 from users.app.use_cases.schedule_access_interactor import ScheduleAccessService
+from users.app.use_cases.signup_interactor import SignupInteractor
 from users.app.use_cases.user_interactor import UserService
 from inbody.community_media import get_community_media_storage
 from inbody.router import router as inbody_router
@@ -276,7 +283,7 @@ async def check_signup_user_id(userId: str, db: AsyncSession = Depends(get_db)) 
     if not user_id:
         raise HTTPException(status_code=400, detail="userId가 필요합니다.")
 
-    user_controller = UserService(db)
+    user_controller = SignupInteractor(repository=SignupPgRepository(session=db))
     available = await user_controller.is_user_id_available(user_id)
     return UserIdCheckResponse(
         userId=user_id,
@@ -306,7 +313,7 @@ async def signup(req: SignupRequest, db: AsyncSession = Depends(get_db)) -> Sign
     )
 
     try:
-        user_controller = UserService(db)
+        user_controller = SignupInteractor(repository=SignupPgRepository(session=db))
         await user_controller.save_user(user_schema)
     except IntegrityError as e:
         await db.rollback()
@@ -334,13 +341,12 @@ async def login(req: LoginRequest, db: AsyncSession = Depends(get_db)) -> LoginR
         password=req.password,
     )
 
-    user_controller = UserService(db)
     try:
-        await user_controller.login_user(login_schema)
+        await LoginInteractor(repository=LoginPgRepository(session=db)).login_user(login_schema)
     except ValueError as e:
         raise HTTPException(status_code=401, detail=str(e)) from e
 
-    role = await user_controller.get_user_role(req.userId)
+    role = await UserService(repository=UserPgRepository(session=db)).get_user_role(req.userId)
 
     return LoginResponse(
         message="로그인 요청이 접수되었습니다.",
@@ -356,7 +362,7 @@ async def get_mypage_profile(userId: str, db: AsyncSession = Depends(get_db)) ->
     if not user_id:
         raise HTTPException(status_code=400, detail="userId가 필요합니다.")
 
-    user_controller = UserService(db)
+    user_controller = MyPageInteractor(repository=UserInformationRepository(session=db))
     profile = await user_controller.get_profile(user_id)
     if profile is None:
         raise HTTPException(status_code=404, detail="사용자를 찾을 수 없습니다.")
@@ -368,8 +374,8 @@ async def save_mypage_profile(
     req: MyPageProfileSchema, db: AsyncSession = Depends(get_db)
 ) -> MyPageProfileResponse:
     """마이페이지 프로필 저장 — Neon `user_information` INSERT/UPDATE."""
+    user_controller = MyPageInteractor(repository=UserInformationRepository(session=db))
     try:
-        user_controller = UserService(db)
         await user_controller.save_profile(req)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e)) from e
