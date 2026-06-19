@@ -56,7 +56,8 @@ class AndrewsArchitectInteractor(AndrewsArchitectUseCase):
         best_intent = max(scores, key=lambda k: scores[k])
         intent = best_intent if scores[best_intent] > 0 else "UNKNOWN"
 
-        logger.info(
+        logger.info
+        (
             f"[AndrewsArchitectInteractor] analyze_intent | messages={messages!r} "
             f"intent={intent} scores={scores}"
         )
