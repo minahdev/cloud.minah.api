@@ -44,6 +44,7 @@ from users.app.use_cases.user_interactor import UserService
 from inbody.community_media import get_community_media_storage
 from inbody.router import router as inbody_router
 from titanic.adapter.inbound.api import titanic_router
+from silicon_valley.adapter.inbound.api import silicon_valley_router
 
 logging.basicConfig(
     level=logging.INFO,
@@ -246,6 +247,7 @@ def chat(
 
 app.include_router(inbody_router)
 app.include_router(titanic_router, prefix="/api")
+app.include_router(silicon_valley_router, prefix="/api")
 
 @app.get("/")
 def read_root():
