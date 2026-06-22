@@ -1,10 +1,10 @@
-from datetime import date, datetime
+﻿from datetime import date, datetime
 
 from sqlalchemy import Date, DateTime, Float, ForeignKey, Integer, Text, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
-from core.database import Base
+from core.matrix.database_manager import Base
 
 
 class TrainDailyLog(Base):

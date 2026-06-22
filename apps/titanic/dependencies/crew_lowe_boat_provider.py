@@ -10,7 +10,7 @@ DIP 원칙:
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
+from core.matrix.database_manager import get_db
 
 from titanic.adapter.outbound.repositories.crew_lowe_boat_repository import LoweBoatRepository
 from titanic.app.ports.output.crew_lowe_boat_port import LoweBoatPort

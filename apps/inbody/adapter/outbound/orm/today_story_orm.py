@@ -1,9 +1,9 @@
-from datetime import date, datetime
+﻿from datetime import date, datetime
 
 from sqlalchemy import Date, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
-from core.database import Base
+from core.matrix.database_manager import Base
 
 
 class TodayStory(Base):

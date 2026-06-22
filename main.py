@@ -29,7 +29,7 @@ from core.matrix.secret_manager import Keymaker, is_gemini_quota_error
 from doro.app.doro_diretor import Diretor
 from chat_mirror import get_last_chat, record_chat
 from weather.app.weather_controller import WeatherController
-from core.database import (
+from core.matrix.database_manager import (
     create_database_tables,
     create_database_tables_windows_threadsafe,
     get_db,

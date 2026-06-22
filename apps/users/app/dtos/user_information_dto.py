@@ -1,7 +1,7 @@
-from sqlalchemy import Float, ForeignKey, Integer, String, Text
+﻿from sqlalchemy import Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
-from core.database import Base
+from core.matrix.database_manager import Base
 
 
 class UserInformation(Base):

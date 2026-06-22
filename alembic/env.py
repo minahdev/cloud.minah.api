@@ -49,7 +49,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from core.database import Base  # noqa: E402
+from core.matrix.database_manager import Base  # noqa: E402
 from users.app.dtos.user_information_dto import UserInformation  # noqa: F401, E402
 from users.app.dtos.user_dto import User  # noqa: F401, E402
 from titanic.adapter.outbound.orm.passenger_rose_model_orm import RoseModelOrm  # noqa: F401, E402

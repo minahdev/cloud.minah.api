@@ -1,7 +1,7 @@
-from sqlalchemy import Integer, String
+﻿from sqlalchemy import Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from core.database import Base
+from core.matrix.database_manager import Base
 
 
 class User(Base):

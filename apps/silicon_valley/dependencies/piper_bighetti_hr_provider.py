@@ -1,7 +1,7 @@
-from fastapi import Depends
+﻿from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
+from core.matrix.database_manager import get_db
 from silicon_valley.adapter.outbound.repositories.piper_bighetti_hr_repository import BighettiHrRepository
 from silicon_valley.app.ports.output.piper_bighetti_hr_port import BighettiHrPort
 from silicon_valley.app.ports.input.piper_bighetti_hr_use_case import BighettiHrUseCase

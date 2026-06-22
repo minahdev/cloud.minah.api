@@ -1,7 +1,7 @@
-from fastapi import Depends
+﻿from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
+from core.matrix.database_manager import get_db
 from silicon_valley.adapter.outbound.repositories.piper_dinesh_dash_repository import DineshDashRepository
 from silicon_valley.app.ports.output.piper_dinesh_dash_port import DineshDashPort
 from silicon_valley.app.ports.input.piper_dinesh_dash_use_case import DineshDashUseCase

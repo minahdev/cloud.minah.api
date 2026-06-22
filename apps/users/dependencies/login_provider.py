@@ -1,4 +1,4 @@
-"""
+﻿"""
 Login 의존성 조립소 (DIP 팩토리).
 
 DIP 원칙:
@@ -10,7 +10,7 @@ DIP 원칙:
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
+from core.matrix.database_manager import get_db
 from users.adapter.outbound.pg.login_pg_repository import LoginPgRepository
 from users.app.ports.input.login_use_case import LoginUseCase
 from users.app.ports.output.login_repository import LoginRepository

@@ -1,4 +1,4 @@
-"""
+﻿"""
 Signup 의존성 조립소 (DIP 팩토리).
 
 DIP 원칙:
@@ -10,7 +10,7 @@ DIP 원칙:
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
+from core.matrix.database_manager import get_db
 from users.adapter.outbound.pg.signup_pg_repository import SignupPgRepository
 from users.app.ports.input.signup_use_case import SignupUseCase
 from users.app.ports.output.signup_repository import SignupRepository

@@ -15,7 +15,7 @@ from titanic.app.use_cases.crew_andrews_architect_interactor import AndrewsArchi
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
+from core.matrix.database_manager import get_db
 
 def get_andrews_architect_repository(
       db: AsyncSession = Depends(get_db)

@@ -1,4 +1,4 @@
-"""
+﻿"""
 MyPage 의존성 조립소 (DIP 팩토리).
 
 DIP 원칙:
@@ -10,7 +10,7 @@ DIP 원칙:
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
+from core.matrix.database_manager import get_db
 from users.adapter.outbound.pg.user_pg_information_repository import UserInformationRepository
 from users.app.ports.input.mypage_use_case import MyPageUseCase
 from users.app.ports.output.mypage_repository import MyPageRepository
