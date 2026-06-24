@@ -1,4 +1,5 @@
 fastapi==0.136.1
+mcp>=1.0.0
 python-multipart==0.0.20
 uvicorn[standard]==0.47.0
 sqlalchemy[asyncio]==2.0.49

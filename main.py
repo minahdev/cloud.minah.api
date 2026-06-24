@@ -26,7 +26,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from adapters.db_health_adapter import DatabaseHealthAdapter
 from apps.deps import inject_keymaker
 from core.matrix.secret_manager import Keymaker, is_gemini_quota_error
-from doro.app.doro_diretor import Diretor
 from chat_mirror import get_last_chat, record_chat
 from weather.app.weather_controller import WeatherController
 from core.matrix.database_manager import (
@@ -259,15 +258,6 @@ app.include_router(silicon_valley_router, prefix="/api")
 @app.get("/")
 def read_root():
     return {"message": "FAST API 메인 페이지 ", "docs": "/docs"}
-
-@app.get("/doro/data")
-def read_doro_data():
-    diretor = Diretor()
-    try:
-        df = diretor.get_data_doro()
-        return df.to_dict(orient="records")
-    except RuntimeError as e:
-        raise HTTPException(status_code=501, detail=str(e)) from e
 
 
 @app.get("/db-check")
