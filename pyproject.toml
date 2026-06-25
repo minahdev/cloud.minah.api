@@ -1,0 +1,62 @@
+[tool.ruff]
+line-length = 88
+target-version = "py313"
+exclude = [
+    ".venv",
+    "__pycache__",
+    "alembic/versions",
+    "*.egg-info",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle — 스타일
+    "F",   # pyflakes — 미사용 import/변수
+    "I",   # isort — import 정렬
+    "N",   # pep8-naming — 네이밍 규칙
+    "UP",  # pyupgrade — 최신 Python 문법 강제
+    "B",   # flake8-bugbear — 잠재적 버그
+    "C4",  # flake8-comprehensions — 불필요한 comprehension 제거
+    "SIM", # flake8-simplify — 단순화 가능한 코드 감지
+    "TCH", # flake8-type-checking — TYPE_CHECKING 블록 강제
+    "RUF", # Ruff 전용 규칙
+]
+ignore = [
+    "E501",   # line-length는 formatter에 위임
+    "N805",   # 클래스 메서드 첫 인자 self (Pydantic validator 충돌)
+    "B008",   # FastAPI Depends() 호출 허용
+    "SIM108", # 삼항 연산자 강제 — 가독성 우선
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["minahai", "secom", "inbody", "titanic", "star_craft"]
+# 스타 토폴로지: Hub(star_craft)와 Spoke들을 first-party로 명시
+
+[tool.ruff.lint.per-file-ignores]
+"**/migrations/**" = ["ALL"]
+"**/alembic/**"    = ["ALL"]
+"**/__init__.py"   = ["F401"]  # __init__.py의 re-export 허용
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+ignore_missing_imports = true
+exclude = [
+    "alembic/",
+    "scripts/",
+]
+# 하네스: 타입 힌트 없는 함수 전면 금지
+disallow_untyped_defs = true
+disallow_any_generics = true
+warn_return_any = true
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+# 외부 라이브러리 stub 없는 패키지 예외
+module = [
+    "kiwipiepy.*",
+    "lightgbm.*",
+    "catboost.*",
+    "google.generativeai.*",
+]
+ignore_missing_imports = true

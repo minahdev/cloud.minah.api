@@ -1,0 +1,67 @@
+[importlinter]
+root_package = minahai
+include_external_packages = True
+
+# ──────────────────────────────────────────────
+# CONTRACT 1: Spoke 독립성 — Spoke → Spoke 금지
+# star_craft를 경유하지 않는 Spoke 간 직통 참조를 차단한다.
+# ──────────────────────────────────────────────
+[importlinter:contract:spoke-independence]
+name = Spokes must not import each other directly
+type = independence
+modules =
+    apps.secom
+    apps.inbody
+    apps.titanic
+ignore_imports =
+    # 기존 inbody → secom 참조: star_craft UserContext 이전 전까지 임시 허용
+    apps.inbody.* -> apps.secom.*
+
+# ──────────────────────────────────────────────
+# CONTRACT 2: Core 레이어 순수성 — Core는 App을 모른다
+# ──────────────────────────────────────────────
+[importlinter:contract:core-purity]
+name = Core must not import from apps
+type = forbidden
+source_modules =
+    minahai.core
+forbidden_modules =
+    apps.secom
+    apps.inbody
+    apps.titanic
+    apps.star_craft
+
+# ──────────────────────────────────────────────
+# CONTRACT 3: Hub 접근 방향 — Hub는 Spoke Port만 참조
+# Hub(star_craft)는 Spoke의 인바운드 어댑터(router)나 구현체(PgRepository)를 직접 참조하지 않는다.
+# ──────────────────────────────────────────────
+[importlinter:contract:hub-to-port-only]
+name = Hub may only import Spoke ports and DTOs
+type = forbidden
+source_modules =
+    apps.star_craft
+forbidden_modules =
+    apps.secom.adapter.outbound
+    apps.inbody.adapter.outbound
+    apps.titanic.adapter.outbound
+    apps.secom.adapter.inbound
+    apps.inbody.adapter.inbound
+    apps.titanic.adapter.inbound
+
+# ──────────────────────────────────────────────
+# CONTRACT 4: 클린 아키텍처 계층 무결성
+# Router(인바운드 어댑터)는 Repository 구현체를 직접 import하지 않는다.
+# ──────────────────────────────────────────────
+[importlinter:contract:clean-arch-layers]
+name = Routers must not import outbound adapters directly
+type = forbidden
+source_modules =
+    apps.secom.adapter.inbound
+    apps.inbody.adapter.inbound
+    apps.titanic.adapter.inbound
+    apps.star_craft.adapter.inbound
+forbidden_modules =
+    apps.secom.adapter.outbound.pg
+    apps.inbody.adapter.outbound.pg
+    apps.titanic.adapter.outbound.pg
+    apps.star_craft.adapter.outbound.pg
