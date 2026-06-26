@@ -18,13 +18,15 @@ if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 import base64
+import hashlib
+import hmac
 import os
 import secrets
 import httpx
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, Form, HTTPException, status
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
-from fastapi.responses import HTMLResponse, JSONResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field
@@ -34,47 +36,105 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 
 _basic_security = HTTPBasic()
+_SESSION_COOKIE = "_api_sess"
+_SESSION_VALUE = "ok"
 
-def _verify_docs(credentials: HTTPBasicCredentials = Depends(_basic_security)) -> None:
+
+def _session_secret() -> bytes:
+    return os.getenv("SESSION_SECRET", "changeme").encode()
+
+
+def _make_cookie() -> str:
+    sig = hmac.new(_session_secret(), _SESSION_VALUE.encode(), hashlib.sha256).hexdigest()
+    return f"{_SESSION_VALUE}.{sig}"
+
+
+def _valid_cookie(value: str) -> bool:
+    try:
+        payload, sig = value.rsplit(".", 1)
+        expected = hmac.new(_session_secret(), payload.encode(), hashlib.sha256).hexdigest()
+        return hmac.compare_digest(sig, expected) and payload == _SESSION_VALUE
+    except Exception:
+        return False
+
+
+def _check_basic_auth(auth_header: str) -> bool:
+    if not auth_header.startswith("Basic "):
+        return False
     expected_user = os.getenv("API_USERNAME", "")
     expected_pass = os.getenv("API_PASSWORD", "")
-    ok = (
-        bool(expected_user)
-        and secrets.compare_digest(credentials.username.encode(), expected_user.encode())
-        and secrets.compare_digest(credentials.password.encode(), expected_pass.encode())
-    )
-    if not ok:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Unauthorized",
-            headers={"WWW-Authenticate": 'Basic realm="Minahdev API"'},
+    if not expected_user:
+        return False
+    try:
+        decoded = base64.b64decode(auth_header[6:]).decode("utf-8")
+        username, _, password = decoded.partition(":")
+        return (
+            secrets.compare_digest(username.encode(), expected_user.encode())
+            and secrets.compare_digest(password.encode(), expected_pass.encode())
         )
+    except Exception:
+        return False
 
 
-class _BasicAuthMiddleware(BaseHTTPMiddleware):
+_LOGIN_HTML = """<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Minahdev API — 로그인</title>
+<style>
+*{{box-sizing:border-box;margin:0;padding:0}}
+body{{min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0f0f0f;font-family:system-ui,sans-serif}}
+.card{{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:40px;width:340px}}
+h1{{color:#fff;font-size:18px;margin-bottom:8px}}
+p{{color:#888;font-size:13px;margin-bottom:28px}}
+label{{display:block;color:#aaa;font-size:12px;margin-bottom:6px}}
+input{{width:100%;padding:10px 12px;background:#111;border:1px solid #333;border-radius:8px;color:#fff;font-size:14px;margin-bottom:16px;outline:none}}
+input:focus{{border-color:#555}}
+button{{width:100%;padding:11px;background:#fff;color:#000;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}}
+button:hover{{background:#e0e0e0}}
+.error{{color:#f87171;font-size:13px;margin-bottom:16px;display:{error_display}}}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Minahdev API</h1>
+  <p>관리자 전용 접근입니다.</p>
+  <div class="error">{error_msg}</div>
+  <form method="post" action="/login">
+    <label>아이디</label>
+    <input type="text" name="username" autofocus autocomplete="username">
+    <label>비밀번호</label>
+    <input type="password" name="password" autocomplete="current-password">
+    <button type="submit">로그인</button>
+  </form>
+</div>
+</body>
+</html>"""
+
+
+class _AuthMiddleware(BaseHTTPMiddleware):
+    _SKIP = {"/login", "/logout"}
+
     async def dispatch(self, request: Request, call_next):
-        expected_user = os.getenv("API_USERNAME", "")
-        expected_pass = os.getenv("API_PASSWORD", "")
-        if not expected_user:
+        if not os.getenv("API_USERNAME"):
+            return await call_next(request)
+        if request.url.path in self._SKIP:
             return await call_next(request)
 
-        auth = request.headers.get("Authorization", "")
-        if auth.startswith("Basic "):
-            try:
-                decoded = base64.b64decode(auth[6:]).decode("utf-8")
-                username, _, password = decoded.partition(":")
-                user_ok = secrets.compare_digest(username.encode(), expected_user.encode())
-                pass_ok = secrets.compare_digest(password.encode(), expected_pass.encode())
-                if user_ok and pass_ok:
-                    return await call_next(request)
-            except Exception:
-                pass
+        # Vercel 서버 사이드 호출 — Basic Auth 헤더
+        if _check_basic_auth(request.headers.get("Authorization", "")):
+            return await call_next(request)
 
-        return Response(
-            "Unauthorized",
-            status_code=401,
-            headers={"WWW-Authenticate": 'Basic realm="Minahdev API"'},
-        )
+        # 브라우저 — 세션 쿠키
+        if _valid_cookie(request.cookies.get(_SESSION_COOKIE, "")):
+            return await call_next(request)
+
+        # 브라우저면 로그인 페이지로, API 호출이면 401
+        accept = request.headers.get("Accept", "")
+        if "text/html" in accept:
+            return RedirectResponse(url="/login", status_code=302)
+        return Response("Unauthorized", status_code=401)
 from adapters.db_health_adapter import DatabaseHealthAdapter
 from apps.deps import inject_keymaker
 from core.matrix.secret_manager import Keymaker, is_gemini_quota_error
@@ -124,14 +184,49 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Minahdev Cloud Main Page", lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
-app.add_middleware(_BasicAuthMiddleware)
+app.add_middleware(_AuthMiddleware)
+
+
+@app.get("/login", include_in_schema=False)
+def login_page() -> HTMLResponse:
+    html = _LOGIN_HTML.format(error_display="none", error_msg="")
+    return HTMLResponse(html)
+
+
+@app.post("/login", include_in_schema=False)
+def login_submit(username: str = Form(...), password: str = Form(...)):
+    expected_user = os.getenv("API_USERNAME", "")
+    expected_pass = os.getenv("API_PASSWORD", "")
+    ok = (
+        bool(expected_user)
+        and secrets.compare_digest(username.encode(), expected_user.encode())
+        and secrets.compare_digest(password.encode(), expected_pass.encode())
+    )
+    if not ok:
+        html = _LOGIN_HTML.format(error_display="block", error_msg="아이디 또는 비밀번호가 올바르지 않습니다.")
+        return HTMLResponse(html, status_code=401)
+    response = RedirectResponse(url="/docs", status_code=302)
+    response.set_cookie(_SESSION_COOKIE, _make_cookie(), httponly=True, samesite="lax")
+    return response
+
+
+@app.get("/logout", include_in_schema=False)
+def logout():
+    response = RedirectResponse(url="/login", status_code=302)
+    response.delete_cookie(_SESSION_COOKIE)
+    return response
+
 
 @app.get("/docs", include_in_schema=False)
-def custom_docs(_: None = Depends(_verify_docs)) -> HTMLResponse:
-    return get_swagger_ui_html(openapi_url="/openapi.json", title="Minahdev Cloud Main Page")
+def custom_docs() -> HTMLResponse:
+    logout_btn = '<a href="/logout" style="position:fixed;top:12px;right:16px;padding:6px 14px;background:#ef4444;color:#fff;border-radius:6px;font-size:13px;text-decoration:none;z-index:9999">로그아웃</a>'
+    html = get_swagger_ui_html(openapi_url="/openapi.json", title="Minahdev Cloud Main Page").body.decode()
+    html = html.replace("</body>", f"{logout_btn}</body>")
+    return HTMLResponse(html)
+
 
 @app.get("/openapi.json", include_in_schema=False)
-def custom_openapi(_: None = Depends(_verify_docs)) -> JSONResponse:
+def custom_openapi() -> JSONResponse:
     return JSONResponse(get_openapi(title=app.title, version=app.version, routes=app.routes))
 
 
