@@ -17,12 +17,35 @@ if sys.platform == "win32":
     # psycopg async requires SelectorEventLoop on Windows
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
+import os
+import secrets
 import httpx
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi.openapi.docs import get_swagger_ui_html
+from fastapi.openapi.utils import get_openapi
+from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+
+_basic_security = HTTPBasic()
+
+def _verify_docs(credentials: HTTPBasicCredentials = Depends(_basic_security)) -> None:
+    expected_user = os.getenv("DOCS_USERNAME", "")
+    expected_pass = os.getenv("DOCS_PASSWORD", "")
+    ok = (
+        bool(expected_user)
+        and secrets.compare_digest(credentials.username.encode(), expected_user.encode())
+        and secrets.compare_digest(credentials.password.encode(), expected_pass.encode())
+    )
+    if not ok:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Unauthorized",
+            headers={"WWW-Authenticate": "Basic"},
+        )
 from adapters.db_health_adapter import DatabaseHealthAdapter
 from apps.deps import inject_keymaker
 from core.matrix.secret_manager import Keymaker, is_gemini_quota_error
@@ -71,7 +94,15 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="Minahdev Cloud Main Page", lifespan=lifespan)
+app = FastAPI(title="Minahdev Cloud Main Page", lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
+
+@app.get("/docs", include_in_schema=False)
+def custom_docs(_: None = Depends(_verify_docs)) -> HTMLResponse:
+    return get_swagger_ui_html(openapi_url="/openapi.json", title="Minahdev Cloud Main Page")
+
+@app.get("/openapi.json", include_in_schema=False)
+def custom_openapi(_: None = Depends(_verify_docs)) -> JSONResponse:
+    return JSONResponse(get_openapi(title=app.title, version=app.version, routes=app.routes))
 
 
 _UPLOADS_ROOT = Path(__file__).resolve().parent / "uploads"
