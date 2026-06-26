@@ -44,7 +44,8 @@ from users.adapter.outbound.pg.user_pg_information_repository import UserInforma
 from users.adapter.outbound.pg.user_pg_repository import UserPgRepository
 from users.app.use_cases.login_interactor import LoginInteractor
 from users.app.use_cases.mypage_interactor import MyPageInteractor
-from users.app.use_cases.schedule_access_interactor import ScheduleAccessService
+from users.app.ports.input.schedule_access_use_case import ScheduleAccessUseCase
+from users.dependencies.schedule_access_provider import get_schedule_access_use_case
 from users.app.use_cases.signup_interactor import SignupInteractor
 from users.app.use_cases.user_interactor import UserService
 from inbody.community_media import get_community_media_storage
@@ -404,29 +405,26 @@ class ScheduleAccessPasswordResponse(BaseModel):
 
 
 @app.get("/schedule/access/status", response_model=ScheduleAccessStatusResponse)
-async def schedule_access_status(db: AsyncSession = Depends(get_db)) -> ScheduleAccessStatusResponse:
-    service = ScheduleAccessService(db)
+async def schedule_access_status(service: ScheduleAccessUseCase = Depends(get_schedule_access_use_case)) -> ScheduleAccessStatusResponse:
     configured = await service.is_configured()
     return ScheduleAccessStatusResponse(configured=configured)
 
 
 @app.get("/schedule/access/admitted", response_model=ScheduleAccessAdmittedResponse)
 async def schedule_access_admitted(
-    userId: str, db: AsyncSession = Depends(get_db)
+    userId: str, service: ScheduleAccessUseCase = Depends(get_schedule_access_use_case)
 ) -> ScheduleAccessAdmittedResponse:
     member_id = userId.strip()
     if not member_id:
         raise HTTPException(status_code=400, detail="userId가 필요합니다.")
-    service = ScheduleAccessService(db)
     admitted = await service.is_admitted(member_id)
     return ScheduleAccessAdmittedResponse(admitted=admitted)
 
 
 @app.post("/schedule/access/verify", response_model=ScheduleAccessVerifyResponse)
 async def schedule_access_verify(
-    req: ScheduleAccessVerifyRequest, db: AsyncSession = Depends(get_db)
+    req: ScheduleAccessVerifyRequest, service: ScheduleAccessUseCase = Depends(get_schedule_access_use_case)
 ) -> ScheduleAccessVerifyResponse:
-    service = ScheduleAccessService(db)
     try:
         await service.verify_and_grant(req.userId.strip(), req.password)
     except ValueError as e:
@@ -456,9 +454,8 @@ class ScheduleInviteRedeemResponse(BaseModel):
 
 @app.post("/schedule/invites", response_model=ScheduleInviteCreateResponse)
 async def schedule_invite_create(
-    req: ScheduleInviteCreateRequest, db: AsyncSession = Depends(get_db)
+    req: ScheduleInviteCreateRequest, service: ScheduleAccessUseCase = Depends(get_schedule_access_use_case)
 ) -> ScheduleInviteCreateResponse:
-    service = ScheduleAccessService(db)
     try:
         payload = await service.create_invite_code(req.userId.strip())
     except ValueError as e:
@@ -468,9 +465,8 @@ async def schedule_invite_create(
 
 @app.post("/schedule/invites/redeem", response_model=ScheduleInviteRedeemResponse)
 async def schedule_invite_redeem(
-    req: ScheduleInviteRedeemRequest, db: AsyncSession = Depends(get_db)
+    req: ScheduleInviteRedeemRequest, service: ScheduleAccessUseCase = Depends(get_schedule_access_use_case)
 ) -> ScheduleInviteRedeemResponse:
-    service = ScheduleAccessService(db)
     try:
         await service.redeem_invite_code(req.userId.strip(), req.code)
     except ValueError as e:
@@ -482,9 +478,8 @@ async def schedule_invite_redeem(
 
 @app.put("/schedule/access/password", response_model=ScheduleAccessPasswordResponse)
 async def schedule_access_set_password(
-    req: ScheduleAccessPasswordRequest, db: AsyncSession = Depends(get_db)
+    req: ScheduleAccessPasswordRequest, service: ScheduleAccessUseCase = Depends(get_schedule_access_use_case)
 ) -> ScheduleAccessPasswordResponse:
-    service = ScheduleAccessService(db)
     try:
         await service.set_password(req.userId.strip(), req.password)
     except ValueError as e:
@@ -502,12 +497,11 @@ class ScheduleMembersResponse(BaseModel):
 
 
 @app.get("/schedule/members", response_model=ScheduleMembersResponse)
-async def schedule_members(userId: str, db: AsyncSession = Depends(get_db)) -> ScheduleMembersResponse:
+async def schedule_members(userId: str, service: ScheduleAccessUseCase = Depends(get_schedule_access_use_case)) -> ScheduleMembersResponse:
     """코치·관리자용 — 접근 암호를 입력한 회원만 (스케줄 탭)."""
     coach_id = userId.strip()
     if not coach_id:
         raise HTTPException(status_code=400, detail="userId가 필요합니다.")
-    service = ScheduleAccessService(db)
     try:
         rows = await service.list_admitted_members_for_coach(coach_id)
     except ValueError as e:
