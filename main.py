@@ -17,24 +17,27 @@ if sys.platform == "win32":
     # psycopg async requires SelectorEventLoop on Windows
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
+import base64
 import os
 import secrets
 import httpx
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
 
 _basic_security = HTTPBasic()
 
 def _verify_docs(credentials: HTTPBasicCredentials = Depends(_basic_security)) -> None:
-    expected_user = os.getenv("DOCS_USERNAME", "")
-    expected_pass = os.getenv("DOCS_PASSWORD", "")
+    expected_user = os.getenv("API_USERNAME", "")
+    expected_pass = os.getenv("API_PASSWORD", "")
     ok = (
         bool(expected_user)
         and secrets.compare_digest(credentials.username.encode(), expected_user.encode())
@@ -44,7 +47,33 @@ def _verify_docs(credentials: HTTPBasicCredentials = Depends(_basic_security)) -
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Unauthorized",
-            headers={"WWW-Authenticate": "Basic"},
+            headers={"WWW-Authenticate": 'Basic realm="Minahdev API"'},
+        )
+
+
+class _BasicAuthMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        expected_user = os.getenv("API_USERNAME", "")
+        expected_pass = os.getenv("API_PASSWORD", "")
+        if not expected_user:
+            return await call_next(request)
+
+        auth = request.headers.get("Authorization", "")
+        if auth.startswith("Basic "):
+            try:
+                decoded = base64.b64decode(auth[6:]).decode("utf-8")
+                username, _, password = decoded.partition(":")
+                user_ok = secrets.compare_digest(username.encode(), expected_user.encode())
+                pass_ok = secrets.compare_digest(password.encode(), expected_pass.encode())
+                if user_ok and pass_ok:
+                    return await call_next(request)
+            except Exception:
+                pass
+
+        return Response(
+            "Unauthorized",
+            status_code=401,
+            headers={"WWW-Authenticate": 'Basic realm="Minahdev API"'},
         )
 from adapters.db_health_adapter import DatabaseHealthAdapter
 from apps.deps import inject_keymaker
@@ -95,6 +124,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Minahdev Cloud Main Page", lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
+app.add_middleware(_BasicAuthMiddleware)
 
 @app.get("/docs", include_in_schema=False)
 def custom_docs(_: None = Depends(_verify_docs)) -> HTMLResponse:
