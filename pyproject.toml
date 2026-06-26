@@ -57,6 +57,6 @@ module = [
     "kiwipiepy.*",
     "lightgbm.*",
     "catboost.*",
-    "google.generativeai.*",
+    "google.genai.*",
 ]
 ignore_missing_imports = true

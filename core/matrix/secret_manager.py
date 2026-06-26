@@ -1,7 +1,8 @@
 import os
 from pathlib import Path
 
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from dotenv import load_dotenv
 
 # backend/core/matrix/keymaker_api.py → backend/
@@ -68,18 +69,11 @@ class Keymaker:
         self.gemini_model_name: str = (
             os.getenv("GEMINI_MODEL") or _DEFAULT_GEMINI_MODEL
         ).strip()
-        self._gemini_model: genai.GenerativeModel | None
+        self._client: genai.Client | None
         if self.gemini_api_key:
-            genai.configure(api_key=self.gemini_api_key)
-            self._gemini_model = self._create_model(self.gemini_model_name)
+            self._client = genai.Client(api_key=self.gemini_api_key)
         else:
-            self._gemini_model = None
-
-    def _create_model(self, model_name: str) -> genai.GenerativeModel:
-        return genai.GenerativeModel(
-            model_name,
-            system_instruction=_CHAT_SYSTEM_INSTRUCTION,
-        )
+            self._client = None
 
     def gemini_model_candidates(self) -> list[str]:
         """우선 모델 + fallback 목록 (중복 제거)."""
@@ -98,23 +92,29 @@ class Keymaker:
         Gemini 채팅 전송. 할당량(429)이면 다음 모델로 자동 재시도.
         Returns: (reply_text, model_name_used)
         """
-        if not self.gemini_api_key:
+        if not self.gemini_api_key or self._client is None:
             raise ValueError("GEMINI_API_KEY가 설정되어 있지 않습니다.")
 
-        genai.configure(api_key=self.gemini_api_key)
+        config = types.GenerateContentConfig(
+            system_instruction=_CHAT_SYSTEM_INSTRUCTION,
+        )
+        contents = [
+            types.Content(role=h["role"], parts=[types.Part(text=h["parts"])])
+            for h in history
+        ]
         quota_models: list[str] = []
         last_error: BaseException | None = None
 
         for model_name in self.gemini_model_candidates():
             try:
-                model = self._create_model(model_name)
-                session = model.start_chat(history=history)
+                session = self._client.chats.create(
+                    model=model_name, history=contents, config=config
+                )
                 response = session.send_message(user_text)
                 text = (response.text or "").strip()
                 if not text:
                     continue
                 self.gemini_model_name = model_name
-                self._gemini_model = model
                 return text, model_name
             except Exception as e:
                 last_error = e
@@ -134,8 +134,8 @@ class Keymaker:
         raise RuntimeError(detail) from last_error
 
     @property
-    def gemini_model(self) -> genai.GenerativeModel | None:
-        return self._gemini_model
+    def gemini_model(self) -> genai.Client | None:
+        return self._client
 
     @property
     def has_weather_api_key(self) -> bool:
