@@ -135,7 +135,6 @@ class _AuthMiddleware(BaseHTTPMiddleware):
         if "text/html" in accept:
             return RedirectResponse(url="/login", status_code=302)
         return Response("Unauthorized", status_code=401)
-from adapters.db_health_adapter import DatabaseHealthAdapter
 from apps.deps import inject_keymaker
 from core.matrix.secret_manager import Keymaker, is_gemini_quota_error
 from chat_mirror import get_last_chat, record_chat
@@ -164,6 +163,7 @@ from inbody.community_media import get_community_media_storage
 from inbody.router import router as inbody_router
 from titanic.adapter.inbound.api import titanic_router
 from silicon_valley.adapter.inbound.api import silicon_valley_router
+from comm_agent.adapter.inbound.api import comm_agent_router
 
 logging.basicConfig(
     level=logging.INFO,
@@ -411,15 +411,11 @@ def chat(
 app.include_router(inbody_router)
 app.include_router(titanic_router, prefix="/api")
 app.include_router(silicon_valley_router, prefix="/api")
+app.include_router(comm_agent_router, prefix="/api")
 
 @app.get("/")
 def read_root():
     return {"message": "FAST API 메인 페이지 ", "docs": "/docs"}
-
-
-@app.get("/db-check")
-async def check_db(db: AsyncSession = Depends(get_db)):
-    return await DatabaseHealthAdapter.server_time_payload(db)
 
 
 
