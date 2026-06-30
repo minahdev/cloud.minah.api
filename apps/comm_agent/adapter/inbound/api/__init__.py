@@ -3,8 +3,14 @@ from __future__ import annotations
 from fastapi import APIRouter
 
 from comm_agent.adapter.inbound.api.v1.comm_agent_router import comm_agent_router as _comm_agent_v1_router
+from comm_agent.adapter.inbound.api.v1.contact_router import contact_router as _contact_v1_router
+from comm_agent.adapter.inbound.api.v1.discord_router import discord_router as _discord_v1_router
+from comm_agent.adapter.inbound.api.v1.telegram_router import telegram_router as _telegram_v1_router
 
 comm_agent_router = APIRouter()
 comm_agent_router.include_router(_comm_agent_v1_router)
+comm_agent_router.include_router(_contact_v1_router)
+comm_agent_router.include_router(_discord_v1_router)
+comm_agent_router.include_router(_telegram_v1_router)
 
 __all__ = ["comm_agent_router"]

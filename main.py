@@ -164,6 +164,8 @@ from inbody.router import router as inbody_router
 from titanic.adapter.inbound.api import titanic_router
 from silicon_valley.adapter.inbound.api import silicon_valley_router
 from comm_agent.adapter.inbound.api import comm_agent_router
+from spam_filter.adapter.inbound.api import spam_filter_router
+from star_craft.adapter.inbound.api import star_craft_router
 
 logging.basicConfig(
     level=logging.INFO,
@@ -412,6 +414,8 @@ app.include_router(inbody_router)
 app.include_router(titanic_router, prefix="/api")
 app.include_router(silicon_valley_router, prefix="/api")
 app.include_router(comm_agent_router, prefix="/api")
+app.include_router(spam_filter_router, prefix="/api")
+app.include_router(star_craft_router, prefix="/api")
 
 @app.get("/")
 def read_root():

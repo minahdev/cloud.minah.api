@@ -6,9 +6,9 @@ import httpx
 from fastapi import APIRouter, Depends, HTTPException
 
 from comm_agent.adapter.inbound.api.schemas.send_email_schema import SendEmailSchema
-from comm_agent.app.dtos.send_email_dto import SendEmailCommand, SendEmailResponse
-from comm_agent.app.ports.input.compose_and_send_email_use_case import ComposeAndSendEmailUseCase
-from comm_agent.dependencies.send_email_provider import get_compose_and_send_email_use_case
+from comm_agent.app.dtos.comm_agent_dto import IntroduceResponse, SendEmailCommand, SendEmailResponse
+from comm_agent.app.ports.input.comm_agent_use_case import ComposeAndSendEmailUseCase
+from comm_agent.dependencies.comm_agent_provider import get_compose_and_send_email_use_case
 
 logger = logging.getLogger(__name__)
 
@@ -37,3 +37,11 @@ async def send_email(
             status_code=502,
             detail=str(e).strip() or "메일 발송에 실패했습니다.",
         ) from e
+
+
+@comm_agent_router.get("/myself", response_model=IntroduceResponse)
+async def introduce_myself(
+    use_case: ComposeAndSendEmailUseCase = Depends(get_compose_and_send_email_use_case),
+) -> IntroduceResponse:
+    """Comm Agent 자기소개."""
+    return await use_case.introduce_myself(id=1, name="Comm Agent")

@@ -15,6 +15,7 @@ lightgbm>=4.0.0
 catboost>=1.2.0
 google-genai>=1.0.0
 httpx==0.28.1
+neo4j>=5.0.0
 bcrypt>=4.0.0
 sqlmodel>=0.0.38
 alembic>=1.13.0

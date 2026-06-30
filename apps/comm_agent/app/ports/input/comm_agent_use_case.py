@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
-from comm_agent.app.dtos.send_email_dto import SendEmailCommand, SendEmailResponse
+from comm_agent.app.dtos.comm_agent_dto import IntroduceResponse, SendEmailCommand, SendEmailResponse
 
 
 class ComposeAndSendEmailUseCase(ABC):
@@ -10,4 +10,8 @@ class ComposeAndSendEmailUseCase(ABC):
 
     @abstractmethod
     async def compose_and_send(self, command: SendEmailCommand) -> SendEmailResponse:
+        pass
+
+    @abstractmethod
+    async def introduce_myself(self, id: int, name: str) -> IntroduceResponse:
         pass

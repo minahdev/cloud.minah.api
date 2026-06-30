@@ -5,7 +5,7 @@ import os
 
 import httpx
 
-from comm_agent.app.ports.output.email_sender_port import EmailSenderPort
+from comm_agent.app.ports.output.comm_agent_port import EmailSenderPort
 
 logger = logging.getLogger(__name__)
 

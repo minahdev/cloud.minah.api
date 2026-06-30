@@ -7,9 +7,9 @@
 from fastapi import Depends
 
 from comm_agent.adapter.outbound.n8n.n8n_email_adapter import N8nEmailAdapter
-from comm_agent.app.ports.input.compose_and_send_email_use_case import ComposeAndSendEmailUseCase
-from comm_agent.app.ports.output.email_sender_port import EmailSenderPort
-from comm_agent.app.use_cases.compose_and_send_email_interactor import ComposeAndSendEmailInteractor
+from comm_agent.app.ports.input.comm_agent_use_case import ComposeAndSendEmailUseCase
+from comm_agent.app.ports.output.comm_agent_port import EmailSenderPort
+from comm_agent.app.use_cases.comm_agent_interactor import ComposeAndSendEmailInteractor
 
 
 def get_email_sender() -> EmailSenderPort:
