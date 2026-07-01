@@ -5,7 +5,7 @@ import logging
 import httpx
 from fastapi import APIRouter, Depends, HTTPException
 
-from comm_agent.app.dtos.comm_agent_dto import SendEmailResponse
+from comm_agent.app.dtos.email_send_dto import SendEmailResponse
 
 from star_craft.adapter.inbound.api.schemas.compose_email_schema import ComposeEmailSchema
 from star_craft.app.use_cases.compose_email_orchestrator import ComposeEmailOrchestrator

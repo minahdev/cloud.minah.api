@@ -6,9 +6,9 @@ import httpx
 from fastapi import APIRouter, Depends, HTTPException
 
 from comm_agent.adapter.inbound.api.schemas.send_email_schema import SendEmailSchema
-from comm_agent.app.dtos.comm_agent_dto import IntroduceResponse, SendEmailCommand, SendEmailResponse
-from comm_agent.app.ports.input.comm_agent_use_case import ComposeAndSendEmailUseCase
-from comm_agent.dependencies.comm_agent_provider import get_compose_and_send_email_use_case
+from comm_agent.app.dtos.email_send_dto import IntroduceResponse, SendEmailCommand, SendEmailResponse
+from comm_agent.app.ports.input.email_send_use_case import ComposeAndSendEmailUseCase
+from comm_agent.dependencies.email_send_provider import get_compose_and_send_email_use_case
 
 logger = logging.getLogger(__name__)
 

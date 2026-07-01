@@ -4,7 +4,7 @@ import logging
 
 from core.lol.t1_mid_faker_orchestrator import FakerOrchestrator
 
-from comm_agent.app.dtos.comm_agent_dto import IntroduceResponse
+from comm_agent.app.dtos.email_send_dto import IntroduceResponse
 from comm_agent.app.dtos.telegram_dto import TelegramSendCommand, TelegramSendResponse
 from comm_agent.app.ports.input.telegram_use_case import TelegramUseCase
 from comm_agent.app.ports.output.telegram_port import TelegramSenderPort

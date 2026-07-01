@@ -6,8 +6,8 @@
 
 from fastapi import Depends
 
-from comm_agent.app.ports.input.comm_agent_use_case import ComposeAndSendEmailUseCase
-from comm_agent.dependencies.comm_agent_provider import get_compose_and_send_email_use_case
+from comm_agent.app.ports.input.email_send_use_case import ComposeAndSendEmailUseCase
+from comm_agent.dependencies.email_send_provider import get_compose_and_send_email_use_case
 
 from star_craft.app.use_cases.compose_email_orchestrator import ComposeEmailOrchestrator
 

@@ -12,7 +12,7 @@ from comm_agent.adapter.inbound.api.schemas.contact_schema import (
     ContactViewSchema,
     UploadContactsResponseSchema,
 )
-from comm_agent.app.dtos.comm_agent_dto import IntroduceResponse
+from comm_agent.app.dtos.email_send_dto import IntroduceResponse
 from comm_agent.app.ports.input.contact_use_case import ManageContactsUseCase
 from comm_agent.dependencies.contact_provider import get_manage_contacts_use_case
 

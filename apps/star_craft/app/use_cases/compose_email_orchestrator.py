@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import logging
 
-from comm_agent.app.dtos.comm_agent_dto import SendEmailCommand, SendEmailResponse
-from comm_agent.app.ports.input.comm_agent_use_case import ComposeAndSendEmailUseCase
+from comm_agent.app.dtos.email_send_dto import SendEmailCommand, SendEmailResponse
+from comm_agent.app.ports.input.email_send_use_case import ComposeAndSendEmailUseCase
 
 from star_craft.domain.ontology.communication.email_template import get_email_spec
 from star_craft.domain.ontology.communication.email_type import EmailType

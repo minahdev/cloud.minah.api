@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
-from comm_agent.app.dtos.comm_agent_dto import IntroduceResponse
+from comm_agent.app.dtos.email_send_dto import IntroduceResponse
 
 
 class DiscordUseCase(ABC):

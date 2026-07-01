@@ -6,7 +6,7 @@ import httpx
 from fastapi import APIRouter, Depends, HTTPException
 
 from comm_agent.adapter.inbound.api.schemas.telegram_schema import TelegramSendSchema
-from comm_agent.app.dtos.comm_agent_dto import IntroduceResponse
+from comm_agent.app.dtos.email_send_dto import IntroduceResponse
 from comm_agent.app.dtos.telegram_dto import TelegramSendCommand, TelegramSendResponse
 from comm_agent.app.ports.input.telegram_use_case import TelegramUseCase
 from comm_agent.dependencies.telegram_provider import get_telegram_use_case

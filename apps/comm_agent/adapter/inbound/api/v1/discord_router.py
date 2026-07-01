@@ -4,7 +4,7 @@ import logging
 
 from fastapi import APIRouter, Depends
 
-from comm_agent.app.dtos.comm_agent_dto import IntroduceResponse
+from comm_agent.app.dtos.email_send_dto import IntroduceResponse
 from comm_agent.app.ports.input.discord_use_case import DiscordUseCase
 from comm_agent.dependencies.discord_provider import get_discord_use_case
 

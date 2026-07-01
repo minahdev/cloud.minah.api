@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 
-from comm_agent.app.dtos.comm_agent_dto import IntroduceResponse
+from comm_agent.app.dtos.email_send_dto import IntroduceResponse
 from comm_agent.app.ports.input.discord_use_case import DiscordUseCase
 
 logger = logging.getLogger(__name__)

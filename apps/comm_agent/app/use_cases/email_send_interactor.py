@@ -4,9 +4,9 @@ import logging
 
 from core.lol.t1_mid_faker_orchestrator import FakerOrchestrator
 
-from comm_agent.app.dtos.comm_agent_dto import IntroduceResponse, SendEmailCommand, SendEmailResponse
-from comm_agent.app.ports.input.comm_agent_use_case import ComposeAndSendEmailUseCase
-from comm_agent.app.ports.output.comm_agent_port import EmailSenderPort
+from comm_agent.app.dtos.email_send_dto import IntroduceResponse, SendEmailCommand, SendEmailResponse
+from comm_agent.app.ports.input.email_send_use_case import ComposeAndSendEmailUseCase
+from comm_agent.app.ports.output.email_send_port import EmailSenderPort
 
 logger = logging.getLogger(__name__)
 
