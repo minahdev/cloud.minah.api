@@ -108,6 +108,8 @@ def _import_orm_models() -> None:
     import titanic.adapter.outbound.orm.passenger_jack_trainer_orm  # noqa: F401
     import titanic.adapter.outbound.orm.passenger_rose_model_orm  # noqa: F401
     import comm_agent.adapter.outbound.orm.contact_orm  # noqa: F401
+    import comm_agent.adapter.outbound.orm.received_mail_orm  # noqa: F401
+    import comm_agent.adapter.outbound.orm.push_subscription_orm  # noqa: F401
 
 
 async def create_database_tables() -> None:

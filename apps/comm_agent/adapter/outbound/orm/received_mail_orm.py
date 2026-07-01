@@ -1,0 +1,20 @@
+from datetime import datetime
+
+from sqlalchemy import DateTime, Integer, String, Text, func
+from sqlalchemy.orm import Mapped, mapped_column
+
+from core.matrix.theone_base import Base
+
+
+class ReceivedMailOrm(Base):
+    """n8n(Gmail)에서 전달받아 저장한 수신 메일 1건."""
+
+    __tablename__ = "received_mails"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    sender: Mapped[str] = mapped_column(String, nullable=False)  # 보낸 사람 (From)
+    subject: Mapped[str] = mapped_column(String, nullable=False, default="")
+    body: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    received_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
