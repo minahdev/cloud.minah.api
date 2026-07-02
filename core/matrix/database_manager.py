@@ -117,8 +117,12 @@ async def create_database_tables() -> None:
     if factory is None or engine is None:
         return
     _import_orm_models()
+    from sqlalchemy import text
+
     from core.matrix.theone_base import Base as TheoneBase
     async with engine.begin() as conn:
+        # pgvector: Vector 컬럼을 쓰는 테이블 생성 전에 확장이 있어야 한다.
+        await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
         await conn.run_sync(Base.metadata.create_all)
         await conn.run_sync(TheoneBase.metadata.create_all)
 

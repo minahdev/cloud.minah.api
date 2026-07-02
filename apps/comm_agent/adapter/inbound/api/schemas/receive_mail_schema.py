@@ -35,3 +35,10 @@ class ReceivedMailViewSchema(BaseModel):
     subject: str
     body: str
     received_at: str
+
+
+class ReceivedMailIntroduceSchema(BaseModel):
+    """수신 메일(Received Mail) 자기소개 입력."""
+
+    id: int
+    name: str

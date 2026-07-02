@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends
 
 from comm_agent.adapter.inbound.api.schemas.monitor_watcher_schema import MonitorWatcherSchema
+from comm_agent.adapter.inbound.api.schemas.receive_mail_schema import ReceiveMailSchema
 from comm_agent.app.dtos.monitor_watcher_dto import MonitorWatcherResponse
+from comm_agent.app.dtos.received_mail_dto import ReceivedMailCommand
 from comm_agent.app.ports.input.monitor_watcher_use_case import MonitorWatcherUseCase
 from comm_agent.dependencies.monitor_watcher_provider import get_monitor_watcher_use_case
 
@@ -20,7 +22,22 @@ async def introduce_myself(
 ) -> MonitorWatcherResponse:
     return await monitor.introduce_myself(
         MonitorWatcherSchema(
-            id=10,
+            id=5,
             name="모니터 (Monitor)",
+        )
+    )
+
+
+@monitor_watcher_router.post("/screen")
+async def screen_mail(
+    schema: ReceiveMailSchema,
+    monitor: MonitorWatcherUseCase = Depends(get_monitor_watcher_use_case),
+) -> dict:
+    """인입 메일을 필터링해 정상건만 pgvector 파이프라인으로 전달한다."""
+    return await monitor.screen_and_store(
+        ReceivedMailCommand(
+            sender=schema.from_,
+            subject=schema.subject,
+            body=schema.body,
         )
     )

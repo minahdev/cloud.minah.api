@@ -1,13 +1,9 @@
-from __future__ import annotations
-
 from abc import ABC, abstractmethod
-
-from comm_agent.app.dtos.email_send_dto import IntroduceResponse
-
+from comm_agent.adapter.inbound.api.schemas.discord_schema import DiscordIntroduceSchema
+from comm_agent.app.dtos.discord_dto import DiscordResponse
 
 class DiscordUseCase(ABC):
-    """Discord 채널 유스케이스."""
 
     @abstractmethod
-    async def introduce_myself(self, id: int, name: str) -> IntroduceResponse:
+    async def introduce_myself(self, schema: DiscordIntroduceSchema)-> DiscordResponse:
         pass

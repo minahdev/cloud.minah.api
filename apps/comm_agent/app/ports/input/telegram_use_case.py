@@ -1,9 +1,15 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING
 
 from comm_agent.app.dtos.email_send_dto import IntroduceResponse
 from comm_agent.app.dtos.telegram_dto import TelegramSendCommand, TelegramSendResponse
+
+if TYPE_CHECKING:
+    from comm_agent.adapter.inbound.api.schemas.telegram_schema import (
+        TelegramIntroduceSchema,
+    )
 
 
 class TelegramUseCase(ABC):
@@ -19,5 +25,5 @@ class TelegramUseCase(ABC):
         pass
 
     @abstractmethod
-    async def introduce_myself(self, id: int, name: str) -> IntroduceResponse:
+    async def introduce_myself(self, schema: TelegramIntroduceSchema) -> IntroduceResponse:
         pass

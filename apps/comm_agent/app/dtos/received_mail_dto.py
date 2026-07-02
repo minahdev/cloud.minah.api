@@ -21,3 +21,12 @@ class ReceivedMailView:
     subject: str
     body: str
     received_at: str
+
+
+@dataclass
+class ReceivedMailResponse:
+    """수신 메일(Received Mail) 자기소개 응답 (IntroduceResponse 대응)."""
+
+    id: int
+    name: str
+    answer: str = ""

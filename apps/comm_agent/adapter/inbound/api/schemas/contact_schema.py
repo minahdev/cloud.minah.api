@@ -57,3 +57,10 @@ class ContactViewSchema(BaseModel):
     id: int
     nickname: str
     email: str
+
+
+class ContactIntroduceSchema(BaseModel):
+    """주소록(Address Book) 자기소개 입력."""
+
+    id: int
+    name: str

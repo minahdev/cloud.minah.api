@@ -2,17 +2,23 @@ from __future__ import annotations
 
 import logging
 
-from comm_agent.app.dtos.email_send_dto import IntroduceResponse
+from comm_agent.adapter.inbound.api.schemas.discord_schema import (
+    DiscordIntroduceSchema,
+)
+from comm_agent.app.dtos.discord_dto import DiscordQuery, DiscordResponse
 from comm_agent.app.ports.input.discord_use_case import DiscordUseCase
+from comm_agent.app.ports.output.discord_port import DiscordPort
 
 logger = logging.getLogger(__name__)
 
 
 class DiscordInteractor(DiscordUseCase):
-    async def introduce_myself(self, id: int, name: str) -> IntroduceResponse:
-        logger.info("[Discord] introduce_myself 진입 | id=%s name=%s", id, name)
-        return IntroduceResponse(
-            id=id,
-            name=name,
-            answer=f"안녕하세요, 저는 '{name}'입니다. 디스코드 채널로 메시지를 보내는 통신 비서예요.",
-        )
+    def __init__(self, repository: DiscordPort) -> None:
+        self._repository = repository
+
+    async def introduce_myself(self, schema: DiscordIntroduceSchema) -> DiscordResponse:
+        
+        return await self._repository.introduce_myself(DiscordQuery(
+            id= schema.id,
+            name= schema.name
+        ))

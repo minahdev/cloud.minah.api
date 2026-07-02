@@ -5,7 +5,10 @@ import logging
 import httpx
 from fastapi import APIRouter, Depends, HTTPException
 
-from comm_agent.adapter.inbound.api.schemas.telegram_schema import TelegramSendSchema
+from comm_agent.adapter.inbound.api.schemas.telegram_schema import (
+    TelegramIntroduceSchema,
+    TelegramSendSchema,
+)
 from comm_agent.app.dtos.email_send_dto import IntroduceResponse
 from comm_agent.app.dtos.telegram_dto import TelegramSendCommand, TelegramSendResponse
 from comm_agent.app.ports.input.telegram_use_case import TelegramUseCase
@@ -45,4 +48,9 @@ async def introduce_myself(
     use_case: TelegramUseCase = Depends(get_telegram_use_case),
 ) -> IntroduceResponse:
     """Telegram 채널 자기소개."""
-    return await use_case.introduce_myself(id=1, name="Telegram Agent")
+    return await use_case.introduce_myself(
+        TelegramIntroduceSchema(
+            id=8,
+            name="Telegram Agent",
+        )
+    )

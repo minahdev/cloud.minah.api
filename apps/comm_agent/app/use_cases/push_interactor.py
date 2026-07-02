@@ -3,10 +3,15 @@ from __future__ import annotations
 import json
 import logging
 
-from comm_agent.app.dtos.push_dto import PushSubscriptionCommand
+from comm_agent.adapter.inbound.api.schemas.push_schema import (
+    PushIntroduceSchema,
+)
+from comm_agent.app.dtos.push_dto import PushResponse, PushSubscriptionCommand
 from comm_agent.app.ports.input.push_use_case import PushUseCase
 from comm_agent.app.ports.output.push_sender_port import PushSenderPort
-from comm_agent.app.ports.output.push_subscription_port import PushSubscriptionRepositoryPort
+from comm_agent.app.ports.output.push_subscription_port import (
+    PushSubscriptionRepositoryPort,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -39,3 +44,14 @@ class PushInteractor(PushUseCase):
                 await self._repository.delete_by_endpoint(sub.endpoint)
         logger.info("[Push] 발송 | 대상=%d 성공=%d", len(subscriptions), sent)
         return sent
+
+    async def introduce_myself(self, schema: PushIntroduceSchema) -> PushResponse:
+        logger.info("[Push] introduce_myself | id=%s name=%s", schema.id, schema.name)
+        return PushResponse(
+            id=schema.id,
+            name=schema.name,
+            answer=(
+                f"안녕하세요, 저는 '{schema.name}'입니다. "
+                "브라우저 푸시 구독을 등록하고 등록된 모두에게 알림을 발송합니다."
+            ),
+        )

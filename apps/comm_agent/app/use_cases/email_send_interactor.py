@@ -2,11 +2,17 @@ from __future__ import annotations
 
 import logging
 
-from core.lol.t1_mid_faker_orchestrator import FakerOrchestrator
-
-from comm_agent.app.dtos.email_send_dto import IntroduceResponse, SendEmailCommand, SendEmailResponse
+from comm_agent.adapter.inbound.api.schemas.send_email_schema import (
+    ComposeEmailIntroduceSchema,
+)
+from comm_agent.app.dtos.email_send_dto import (
+    IntroduceResponse,
+    SendEmailCommand,
+    SendEmailResponse,
+)
 from comm_agent.app.ports.input.email_send_use_case import ComposeAndSendEmailUseCase
 from comm_agent.app.ports.output.email_send_port import EmailSenderPort
+from core.lol.t1_mid_faker_orchestrator import FakerOrchestrator
 
 logger = logging.getLogger(__name__)
 
@@ -56,10 +62,12 @@ class ComposeAndSendEmailInteractor(ComposeAndSendEmailUseCase):
         logger.info("[comm_agent] exaone 작성 완료 -> 발송 완료 | to=%s", command.to)
         return SendEmailResponse(success=True, to=command.to, subject=subject)
 
-    async def introduce_myself(self, id: int, name: str) -> IntroduceResponse:
-        logger.info("[comm_agent] introduce_myself 진입 | id=%s name=%s", id, name)
+    async def introduce_myself(self, schema: ComposeEmailIntroduceSchema) -> IntroduceResponse:
+        logger.info(
+            "[comm_agent] introduce_myself 진입 | id=%s name=%s", schema.id, schema.name
+        )
         return IntroduceResponse(
-            id=id,
-            name=name,
-            answer=f"안녕하세요, 저는 '{name}'입니다. 받는 사람과 주제를 주시면 이메일 본문을 작성해 발송하는 통신 비서예요.",
+            id=schema.id,
+            name=schema.name,
+            answer=f"안녕하세요, 저는 '{schema.name}'입니다. 받는 사람과 주제를 주시면 이메일 본문을 작성해 발송하는 통신 비서예요.",
         )

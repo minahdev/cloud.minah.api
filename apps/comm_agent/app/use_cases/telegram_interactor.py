@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import logging
 
-from core.lol.t1_mid_faker_orchestrator import FakerOrchestrator
-
+from comm_agent.adapter.inbound.api.schemas.telegram_schema import (
+    TelegramIntroduceSchema,
+)
 from comm_agent.app.dtos.email_send_dto import IntroduceResponse
 from comm_agent.app.dtos.telegram_dto import TelegramSendCommand, TelegramSendResponse
 from comm_agent.app.ports.input.telegram_use_case import TelegramUseCase
 from comm_agent.app.ports.output.telegram_port import TelegramSenderPort
+from core.lol.t1_mid_faker_orchestrator import FakerOrchestrator
 
 logger = logging.getLogger(__name__)
 
@@ -40,10 +42,10 @@ class TelegramInteractor(TelegramUseCase):
             logger.warning("[Telegram] 업무보고 실패: %s", e)
             return False
 
-    async def introduce_myself(self, id: int, name: str) -> IntroduceResponse:
-        logger.info("[Telegram] introduce_myself 진입 | id=%s name=%s", id, name)
+    async def introduce_myself(self, schema: TelegramIntroduceSchema) -> IntroduceResponse:
+        logger.info("[Telegram] introduce_myself 진입 | id=%s name=%s", schema.id, schema.name)
         return IntroduceResponse(
-            id=id,
-            name=name,
-            answer=f"안녕하세요, 저는 '{name}'입니다. 텔레그램 채널로 메시지를 보내는 통신 비서예요.",
+            id=schema.id,
+            name=schema.name,
+            answer=f"안녕하세요, 저는 '{schema.name}'입니다. 텔레그램 채널로 메시지를 보내는 통신 비서예요.",
         )

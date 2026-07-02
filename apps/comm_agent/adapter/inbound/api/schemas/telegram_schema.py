@@ -20,3 +20,10 @@ class TelegramSendSchema(BaseModel):
             }
         }
     }
+
+
+class TelegramIntroduceSchema(BaseModel):
+    """Telegram Agent 자기소개 입력."""
+
+    id: int
+    name: str

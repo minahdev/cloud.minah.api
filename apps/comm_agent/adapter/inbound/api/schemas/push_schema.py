@@ -21,3 +21,10 @@ class PushSubscribeSchema(BaseModel):
 
     endpoint: str = Field(..., description="푸시 서비스 endpoint URL")
     keys: PushKeysSchema
+
+
+class PushIntroduceSchema(BaseModel):
+    """웹 푸시(Push) 자기소개 입력."""
+
+    id: int
+    name: str

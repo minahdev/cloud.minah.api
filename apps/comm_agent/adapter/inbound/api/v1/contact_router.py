@@ -9,6 +9,7 @@ from comm_agent.adapter.inbound.api.contact_csv_parser import (
     parse_contacts_csv_text,
 )
 from comm_agent.adapter.inbound.api.schemas.contact_schema import (
+    ContactIntroduceSchema,
     ContactViewSchema,
     UploadContactsResponseSchema,
 )
@@ -62,4 +63,11 @@ async def introduce_myself(
     use_case: ManageContactsUseCase = Depends(get_manage_contacts_use_case),
 ) -> IntroduceResponse:
     """주소록 자기소개."""
-    return await use_case.introduce_myself(id=1, name="Address Book")
+    return await use_case.introduce_myself(
+        ContactIntroduceSchema(
+            id=1,
+            name="Address Book",
+        )
+    )
+
+

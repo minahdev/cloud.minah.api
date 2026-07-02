@@ -7,7 +7,10 @@ from comm_agent.app.dtos.contact_dto import ContactView
 from comm_agent.app.dtos.email_send_dto import IntroduceResponse
 
 if TYPE_CHECKING:
-    from comm_agent.adapter.inbound.api.schemas.contact_schema import ContactRecordSchema
+    from comm_agent.adapter.inbound.api.schemas.contact_schema import (
+        ContactIntroduceSchema,
+        ContactRecordSchema,
+    )
 
 
 class ManageContactsUseCase(ABC):
@@ -26,5 +29,5 @@ class ManageContactsUseCase(ABC):
         pass
 
     @abstractmethod
-    async def introduce_myself(self, id: int, name: str) -> IntroduceResponse:
+    async def introduce_myself(self, schema: ContactIntroduceSchema) -> IntroduceResponse:
         pass

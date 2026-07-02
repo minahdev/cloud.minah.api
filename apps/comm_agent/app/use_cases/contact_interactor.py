@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import logging
 
-from comm_agent.adapter.inbound.api.schemas.contact_schema import ContactRecordSchema
+from comm_agent.adapter.inbound.api.schemas.contact_schema import (
+    ContactIntroduceSchema,
+    ContactRecordSchema,
+)
 from comm_agent.app.dtos.contact_dto import ContactCommand, ContactView
 from comm_agent.app.dtos.email_send_dto import IntroduceResponse
 from comm_agent.app.ports.input.contact_use_case import ManageContactsUseCase
@@ -30,10 +33,12 @@ class ManageContactsInteractor(ManageContactsUseCase):
     async def search_contacts(self, keyword: str) -> list[ContactView]:
         return await self._repository.search_contacts(keyword)
 
-    async def introduce_myself(self, id: int, name: str) -> IntroduceResponse:
-        logger.info("[ManageContacts] introduce_myself 진입 | id=%s name=%s", id, name)
+    async def introduce_myself(self, schema: ContactIntroduceSchema) -> IntroduceResponse:
+        logger.info(
+            "[ManageContacts] introduce_myself 진입 | id=%s name=%s", schema.id, schema.name
+        )
         return IntroduceResponse(
-            id=id,
-            name=name,
-            answer=f"안녕하세요, 저는 '{name}'입니다. CSV로 받은 닉네임·이메일을 보관하고 받는 사람을 찾아주는 주소록이에요.",
+            id=schema.id,
+            name=schema.name,
+            answer=f"안녕하세요, 저는 '{schema.name}'입니다. CSV로 받은 닉네임·이메일을 보관하고 받는 사람을 찾아주는 주소록이에요.",
         )

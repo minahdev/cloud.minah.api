@@ -1,8 +1,18 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING
 
-from comm_agent.app.dtos.email_send_dto import IntroduceResponse, SendEmailCommand, SendEmailResponse
+from comm_agent.app.dtos.email_send_dto import (
+    IntroduceResponse,
+    SendEmailCommand,
+    SendEmailResponse,
+)
+
+if TYPE_CHECKING:
+    from comm_agent.adapter.inbound.api.schemas.send_email_schema import (
+        ComposeEmailIntroduceSchema,
+    )
 
 
 class ComposeAndSendEmailUseCase(ABC):
@@ -13,5 +23,5 @@ class ComposeAndSendEmailUseCase(ABC):
         pass
 
     @abstractmethod
-    async def introduce_myself(self, id: int, name: str) -> IntroduceResponse:
+    async def introduce_myself(self, schema: ComposeEmailIntroduceSchema) -> IntroduceResponse:
         pass

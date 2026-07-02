@@ -5,10 +5,19 @@ import logging
 import httpx
 from fastapi import APIRouter, Depends, HTTPException
 
-from comm_agent.adapter.inbound.api.schemas.send_email_schema import SendEmailSchema
-from comm_agent.app.dtos.email_send_dto import IntroduceResponse, SendEmailCommand, SendEmailResponse
+from comm_agent.adapter.inbound.api.schemas.send_email_schema import (
+    ComposeEmailIntroduceSchema,
+    SendEmailSchema,
+)
+from comm_agent.app.dtos.email_send_dto import (
+    IntroduceResponse,
+    SendEmailCommand,
+    SendEmailResponse,
+)
 from comm_agent.app.ports.input.email_send_use_case import ComposeAndSendEmailUseCase
-from comm_agent.dependencies.email_send_provider import get_compose_and_send_email_use_case
+from comm_agent.dependencies.email_send_provider import (
+    get_compose_and_send_email_use_case,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -44,4 +53,9 @@ async def introduce_myself(
     use_case: ComposeAndSendEmailUseCase = Depends(get_compose_and_send_email_use_case),
 ) -> IntroduceResponse:
     """Comm Agent 자기소개."""
-    return await use_case.introduce_myself(id=1, name="Comm Agent")
+    return await use_case.introduce_myself(
+        ComposeEmailIntroduceSchema(
+            id=3,
+            name="Comm Agent",
+        )
+    )

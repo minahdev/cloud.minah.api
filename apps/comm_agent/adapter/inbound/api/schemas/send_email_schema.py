@@ -26,3 +26,10 @@ class SendEmailSchema(BaseModel):
             }
         }
     }
+
+
+class ComposeEmailIntroduceSchema(BaseModel):
+    """Comm Agent 자기소개 입력."""
+
+    id: int
+    name: str

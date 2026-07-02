@@ -6,10 +6,11 @@ import os
 from fastapi import APIRouter, Depends
 
 from comm_agent.adapter.inbound.api.schemas.push_schema import (
+    PushIntroduceSchema,
     PushSubscribeSchema,
     VapidPublicKeyResponse,
 )
-from comm_agent.app.dtos.push_dto import PushSubscriptionCommand
+from comm_agent.app.dtos.push_dto import PushResponse, PushSubscriptionCommand
 from comm_agent.app.ports.input.push_use_case import PushUseCase
 from comm_agent.dependencies.push_provider import get_push_use_case
 
@@ -38,3 +39,15 @@ async def subscribe(
         )
     )
     return {"ok": True}
+
+
+@push_router.get("/myself", response_model=PushResponse)
+async def introduce_myself(
+    use_case: PushUseCase = Depends(get_push_use_case),
+) -> PushResponse:
+    return await use_case.introduce_myself(
+        PushIntroduceSchema(
+            id=6,
+            name="웹 푸시 (Push)",
+        )
+    )

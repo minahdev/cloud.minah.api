@@ -9,7 +9,7 @@ class ReceivedMailRepositoryPort(ABC):
     """수신 메일 저장·조회 게이트웨이."""
 
     @abstractmethod
-    async def save_mail(self, command: ReceivedMailCommand) -> int:
+    async def save_mail(self, command: ReceivedMailCommand, embedding: list[float]) -> int:
         pass
 
     @abstractmethod
