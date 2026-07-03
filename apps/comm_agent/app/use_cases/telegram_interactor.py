@@ -5,8 +5,12 @@ import logging
 from comm_agent.adapter.inbound.api.schemas.telegram_schema import (
     TelegramIntroduceSchema,
 )
-from comm_agent.app.dtos.email_send_dto import IntroduceResponse
-from comm_agent.app.dtos.telegram_dto import TelegramSendCommand, TelegramSendResponse
+from comm_agent.app.dtos.telegram_dto import (
+    TelegramResponse,
+    TelegramSendCommand,
+    TelegramSendQuery,
+    TelegramSendResponse,
+)
 from comm_agent.app.ports.input.telegram_use_case import TelegramUseCase
 from comm_agent.app.ports.output.telegram_port import TelegramSenderPort
 from core.lol.t1_mid_faker_orchestrator import FakerOrchestrator
@@ -21,8 +25,9 @@ _SYSTEM_PROMPT = (
 
 
 class TelegramInteractor(TelegramUseCase):
-    def __init__(self, telegram_sender: TelegramSenderPort) -> None:
+    def __init__(self, telegram_sender: TelegramSenderPort, repository: TelegramSenderPort) -> None:
         self._telegram_sender = telegram_sender
+        self._repository = repository
 
     async def send_message(self, command: TelegramSendCommand) -> TelegramSendResponse:
         orchestrator = FakerOrchestrator(system_prompt=_SYSTEM_PROMPT)
@@ -42,10 +47,9 @@ class TelegramInteractor(TelegramUseCase):
             logger.warning("[Telegram] 업무보고 실패: %s", e)
             return False
 
-    async def introduce_myself(self, schema: TelegramIntroduceSchema) -> IntroduceResponse:
-        logger.info("[Telegram] introduce_myself 진입 | id=%s name=%s", schema.id, schema.name)
-        return IntroduceResponse(
-            id=schema.id,
-            name=schema.name,
-            answer=f"안녕하세요, 저는 '{schema.name}'입니다. 텔레그램 채널로 메시지를 보내는 통신 비서예요.",
-        )
+    async def introduce_myself(self, schema: TelegramIntroduceSchema) -> TelegramResponse:
+
+        return await self._repository.introduce_myself(TelegramSendQuery(
+            id= schema.id,
+            name= schema.name
+        ))

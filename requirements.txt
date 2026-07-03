@@ -34,3 +34,4 @@ langchain-core==0.3.63
 langchain-community==0.3.24
 langsmith>=0.1.125,<0.4
 langgraph==0.2.70
+boto3==1.35.99

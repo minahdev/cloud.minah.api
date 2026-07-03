@@ -18,3 +18,19 @@ class TelegramSendResponse:
     success: bool
     chat_id: str
     message: str = "텔레그램 메시지를 발송했습니다."
+
+
+@dataclass(frozen=True) # 생성 후 수정 불가하도록 설정
+class TelegramSendQuery:
+
+    id: int   # 직관적인 타입 변경
+    name: str
+
+
+@dataclass
+class TelegramResponse:
+    """텔레그램 자기소개 응답 (IntroduceResponse 대응)."""
+
+    id: int
+    name: str
+    answer: str = ""
