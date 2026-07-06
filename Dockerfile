@@ -11,6 +11,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends libgomp1 && rm 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# 4-1. OpenCV/ultralytics 런타임 시스템 라이브러리 (slim 이미지에 없음)
+#      pip 레이어 뒤에 둬서 torch 등 재설치 캐시를 깨지 않는다.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgl1 libglib2.0-0 libsm6 libxext6 libxrender1 libxcb1 \
+    && rm -rf /var/lib/apt/lists/*
+
 # 4. 나머지 모든 소스코드 복사
 COPY . .
 

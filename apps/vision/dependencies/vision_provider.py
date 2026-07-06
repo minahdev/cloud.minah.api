@@ -15,9 +15,11 @@ from core.matrix.database_manager import get_db
 from vision.adapter.outbound.repositories.vision_repository import VisionRepository
 from vision.adapter.outbound.storage.s3_image_storage_adapter import S3ImageStorageAdapter
 from vision.app.ports.input.vision_use_case import VisionUseCase
+from vision.app.ports.input.yolo_use_case import RecognizeYoloUseCase
 from vision.app.ports.output.image_storage_port import ImageStoragePort
 from vision.app.ports.output.vision_port import VisionPort
 from vision.app.use_cases.vision_interactor import VisionInteractor
+from vision.app.use_cases.yolo_interactor import RecognizeYoloInteractor
 
 
 def get_vision_repository(
@@ -35,3 +37,7 @@ def get_vision_use_case(
     storage: ImageStoragePort = Depends(get_image_storage),
 ) -> VisionUseCase:
     return VisionInteractor(repository=repository, storage=storage)
+
+
+def get_recognize_use_case() -> RecognizeYoloUseCase:
+    return RecognizeYoloInteractor()
