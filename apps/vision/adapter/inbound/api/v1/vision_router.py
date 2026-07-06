@@ -94,7 +94,9 @@ async def recognize_face(
     data = await file.read()
 
     # 업로드 바이트를 임시 파일로 저장 → YOLO는 경로로 추론한다.
-    suffix = Path(filename).suffix or ".jpg"
+    # ultralytics가 인식하는 확장자로 정규화(.jfif 등은 실제 JPEG → .jpg).
+    ext = Path(filename).suffix.lower()
+    suffix = ".png" if (ext == ".png" or content_type == "image/png") else ".jpg"
     tmp_path = ""
     try:
         with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
